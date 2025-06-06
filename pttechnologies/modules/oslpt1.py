@@ -16,8 +16,8 @@ class OSLPT1:
         """Main method"""
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
-        response1 = self.http_client.send_request(url=self.args.domain + "/LPP1", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
-        response2 = self.http_client.send_request(url=self.args.domain + "/LPT1", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
+        response1 = self.http_client.send_request(url=self.args.url + "/LPP1", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
+        response2 = self.http_client.send_request(url=self.args.url + "/LPT1", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
 
         if response1.status_code != response2.status_code:
             self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSLNK")

@@ -26,7 +26,7 @@ import sys; sys.path.append(__file__.rsplit("/", 1)[0])
 from contextlib import redirect_stdout, redirect_stderr
 from threading import Lock
 from io import StringIO
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import requests
 
@@ -152,10 +152,6 @@ def get_available_modules():
     ]
     return available_modules
 
-def _get_domain(url):
-    # TODO: Vratit domenu
-    return url
-
 def parse_args():
     parser = argparse.ArgumentParser(add_help="False", description=f"{SCRIPTNAME} <options>")
     parser.add_argument("-u",  "--url",            type=str, required=True)
@@ -182,14 +178,18 @@ def parse_args():
 
     args = parser.parse_args()
 
-    args.domain = _get_domain(args.url)
     args.headers = ptnethelper.get_request_headers(args)
     if args.proxy:
         args.proxy = {"http": args.proxy, "https": args.proxy}
 
+    args.url = strip_url_path(args.url)
+
     print_banner(SCRIPTNAME, __version__, args.json, 0)
     return args
 
+def strip_url_path(url):
+    parsed = urlparse(url)
+    return urlunparse((parsed.scheme, parsed.netloc, '', '', '', ''))
 
 def main():
     global SCRIPTNAME

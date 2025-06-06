@@ -46,7 +46,6 @@ class PtTechnologies:
     def run(self) -> None:
         """Main method"""
         tests = self.args.tests or get_available_modules()
-        print(tests)
 
         # Run each test (module) in a separated thread
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
@@ -69,7 +68,7 @@ class PtTechnologies:
 
                 # Print buffered output with lock
                 with self._lock:
-                    print(buffer.getvalue(), end='\n')
+                    print(buffer.getvalue(), end='')
 
             else:
                 ptprint(f"Module '{module_name}' does not have 'run' function", "WARNING", not self.args.json)
@@ -155,7 +154,7 @@ def get_available_modules():
 def parse_args():
     parser = argparse.ArgumentParser(add_help="False", description=f"{SCRIPTNAME} <options>")
     parser.add_argument("-u",  "--url",            type=str, required=True)
-    parser.add_argument("-ts",  "--tests",         type=str, nargs="+") # TODO: If not set any test ALL
+    parser.add_argument("-ts",  "--tests",         type=lambda s: s.lower(), nargs="+")
     parser.add_argument("-p",  "--proxy",          type=str)
     parser.add_argument("-T",  "--timeout",        type=int, default=10)
     parser.add_argument("-t",  "--threads",        type=int, default=10)

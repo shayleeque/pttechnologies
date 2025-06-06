@@ -27,8 +27,6 @@ source ~/.zshrc
 ## Usage examples
 ```
 pttechnologies -u htttps://www.example.com/ -ts OS
-pttechnologies -u htttps://www.example.com/
--ts oslpt1
 ```
 
 ## Options

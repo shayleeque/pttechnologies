@@ -58,7 +58,8 @@ class PtTechnologies:
     def run_single_module(self, module_name):
         module_path = os.path.join(os.path.dirname(__file__), "modules", f"{module_name}.py")
         try:
-            module = self.import_module_from_path(module_name, module_path)
+            with self._lock:
+                module = self.import_module_from_path(module_name, module_path)
             if hasattr(module, "run") and callable(module.run):
 
                 # Redirect output to buffer
@@ -68,7 +69,7 @@ class PtTechnologies:
 
                 # Print buffered output with lock
                 with self._lock:
-                    print(buffer.getvalue(), end='')
+                    print(buffer.getvalue(), end='\n')
 
             else:
                 ptprint(f"Module '{module_name}' does not have 'run' function", "WARNING", not self.args.json)

@@ -30,6 +30,7 @@ from urllib.parse import urlparse, urlunparse
 from ptlibs import ptjsonlib, ptmisclib, ptnethelper
 from ptlibs.ptprinthelper import ptprint, print_banner, help_print
 from ptlibs.threads import ptthreads, printlock
+from ptlibs.http.http_client import HttpClient
 
 from helpers._thread_local_stdout import ThreadLocalStdout
 from _version import __version__
@@ -42,6 +43,8 @@ class PtTechnologies:
         self.ptthreads   = ptthreads.PtThreads()
         self.args        = args
         self._lock       = threading.Lock()
+        self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
+        self._fetch_initial_responses()
 
         # Activate ThreadLocalStdout stdout proxy
         self.thread_local_stdout = ThreadLocalStdout(sys.stdout)
@@ -50,7 +53,6 @@ class PtTechnologies:
     def run(self) -> None:
         """Main method"""
         tests = self.args.tests or _get_all_available_modules()
-
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
 
         self.ptjsonlib.set_status("finished")
@@ -86,7 +88,7 @@ class PtTechnologies:
                 finally:
                     self.thread_local_stdout.clear_thread_buffer()
                     with self._lock:
-                        ptprint(buffer.getvalue(), end="\n", "TEXT", not self.args.json)
+                        ptprint(buffer.getvalue(), "TEXT", not self.args.json, end="\n")
             else:
                 ptprint(f"Module '{module_name}' does not have 'run' function", "WARNING", not self.args.json)
 
@@ -96,19 +98,22 @@ class PtTechnologies:
             ptprint(f"Error running module '{module_name}': {e}", "ERROR", not self.args.json)
 
 
-def _get_all_available_modules() -> list:
-    """Returns list of available modules"""
-    modules_folder = os.path.join(os.path.dirname(__file__), "modules")
-    available_modules = [
-        f.rsplit(".py")[0].split()[0] for f in sorted(os.listdir(modules_folder))
-        if (
-            os.path.join(modules_folder, f) and
-            not f.startswith("_") and
-            f.endswith(".py")
-        )
-    ]
-    return available_modules
+    def _fetch_initial_responses(self):
+        """
+        Sends initial HTTP requests to the homepage and a non-existent URL.
+        Stores responses in self.resp_hp and self.resp_404 for reuse across modules.
 
+        If homepage returns a redirect or a non-200 status code, the script exits early.
+        """
+        # Home page request
+        self.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
+        if 300 <= self.resp_hp.status_code < 400:
+            self.ptjsonlib.end_error(f"Redirect to URL: {self.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
+        elif self.resp_hp.status_code != 200:
+            self.ptjsonlib.end_error(f"Webpage returns status code: {self.resp_hp.status_code}", self.args.json)
+
+        # Nonexistent page request
+        self.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
 
 def _import_module_from_path(module_name: str) -> ModuleType:
     """
@@ -136,6 +141,21 @@ def _import_module_from_path(module_name: str) -> ModuleType:
     spec.loader.exec_module(module)
     return module
 
+def _get_all_available_modules() -> list:
+    """
+    Returns a list of available Python module names from the 'modules' directory.
+
+    Modules must:
+    - Not start with an underscore
+    - Have a '.py' extension
+    """
+    modules_folder = os.path.join(os.path.dirname(__file__), "modules")
+    available_modules = [
+        f.rsplit(".py", 1)[0]
+        for f in sorted(os.listdir(modules_folder))
+        if f.endswith(".py") and not f.startswith("_")
+    ]
+    return available_modules
 
 def get_help():
     """

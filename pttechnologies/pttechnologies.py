@@ -17,6 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with pttechnologies.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import argparse
 import importlib
 import os
@@ -98,7 +99,7 @@ class PtTechnologies:
             ptprint(f"Error running module '{module_name}': {e}", "ERROR", not self.args.json)
 
 
-    def _fetch_initial_responses(self):
+    def _fetch_initial_responses(self) -> None:
         """
         Sends initial HTTP requests to the homepage and a non-existent URL.
         Stores responses in self.resp_hp and self.resp_404 for reuse across modules.
@@ -106,14 +107,14 @@ class PtTechnologies:
         If homepage returns a redirect or a non-200 status code, the script exits early.
         """
         # Home page request
-        self.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
+        self.args.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
         if 300 <= self.resp_hp.status_code < 400:
             self.ptjsonlib.end_error(f"Redirect to URL: {self.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
         elif self.resp_hp.status_code != 200:
             self.ptjsonlib.end_error(f"Webpage returns status code: {self.resp_hp.status_code}", self.args.json)
 
         # Nonexistent page request
-        self.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
+        self.args.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
 
 def _import_module_from_path(module_name: str) -> ModuleType:
     """

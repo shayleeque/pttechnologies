@@ -1,7 +1,9 @@
 [![penterepTools](https://www.penterep.com/external/penterepToolsLogo.png)](https://www.penterep.com/)
 
 
-## pttechnologies - Testing tool for identifying technologies used by a web application
+## PTTECHNOLOGIES
+
+pttechnologies Testing tool for identifying technologies used by a web application
 
 ## Installation
 
@@ -26,7 +28,8 @@ source ~/.zshrc
 
 ## Usage examples
 ```
-pttechnologies -u htttps://www.example.com/ -ts OS
+pttechnologies -u htttps://www.example.com/
+pttechnologies -u htttps://www.example.com/ -ts OSCS OSLPT1 WSHT
 ```
 
 ## Options
@@ -35,6 +38,7 @@ pttechnologies -u htttps://www.example.com/ -ts OS
    -ts  --tests       <test>          Specify one or more tests to perform:
                        OSCS           Test OS detection via Case Sensitivity
                        OSLPT1         Test OS detection via LPT1 path
+                       WSHT           Test Apache detection via .ht access rule
 
    -p   --proxy       <proxy>         Set proxy (e.g. http://127.0.0.1:8080)
    -T   --timeout     <miliseconds>   Set timeout (default 10)
@@ -47,7 +51,6 @@ pttechnologies -u htttps://www.example.com/ -ts OS
    -v   --version                     Show script version and exit
    -h   --help                        Show this help message and exit
    -j   --json                        Output in JSON format
-
 ```
 
 ## Dependencies

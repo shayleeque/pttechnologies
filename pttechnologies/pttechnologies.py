@@ -2,7 +2,7 @@
 """
     Copyright (c) 2025 Penterep Security s.r.o.
 
-    pttechnologies
+    pttechnologies - Testing tool for identifying technologies used by a web application
 
     pttechnologies is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ class PtTechnologies:
                 finally:
                     self.thread_local_stdout.clear_thread_buffer()
                     with self._lock:
-                        print(buffer.getvalue(), end="")
+                        ptprint(buffer.getvalue(), end="\n", "TEXT", not self.args.json)
             else:
                 ptprint(f"Module '{module_name}' does not have 'run' function", "WARNING", not self.args.json)
 
@@ -94,6 +94,47 @@ class PtTechnologies:
             ptprint(f"Module '{module_name}' not found", "ERROR", not self.args.json)
         except Exception as e:
             ptprint(f"Error running module '{module_name}': {e}", "ERROR", not self.args.json)
+
+
+def _get_all_available_modules() -> list:
+    """Returns list of available modules"""
+    modules_folder = os.path.join(os.path.dirname(__file__), "modules")
+    available_modules = [
+        f.rsplit(".py")[0].split()[0] for f in sorted(os.listdir(modules_folder))
+        if (
+            os.path.join(modules_folder, f) and
+            not f.startswith("_") and
+            f.endswith(".py")
+        )
+    ]
+    return available_modules
+
+
+def _import_module_from_path(module_name: str) -> ModuleType:
+    """
+    Dynamically imports a Python module from a given file path.
+
+    This method uses `importlib` to load a module from a specific file location.
+    The module is then registered in `sys.modules` under the provided name.
+
+    Args:
+        module_name (str): Name under which to register the module.
+
+    Returns:
+        ModuleType: The loaded Python module object.
+
+    Raises:
+        ImportError: If the module cannot be found or loaded.
+    """
+    module_path = os.path.join(os.path.dirname(__file__), "modules", f"{module_name}.py")
+
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    if spec is None:
+        raise ImportError(f"Cannot find spec for {module_name} at {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def get_help():
@@ -148,47 +189,6 @@ def get_help():
         ]
         }]
 
-
-def _get_all_available_modules() -> list:
-    """Returns list of available modules"""
-    modules_folder = os.path.join(os.path.dirname(__file__), "modules")
-    available_modules = [
-        f.rsplit(".py")[0].split()[0] for f in sorted(os.listdir(modules_folder))
-        if (
-            os.path.join(modules_folder, f) and
-            not f.startswith("_") and
-            f.endswith(".py")
-        )
-    ]
-    return available_modules
-
-def _import_module_from_path(module_name: str) -> ModuleType:
-    """
-    Dynamically imports a Python module from a given file path.
-
-    This method uses `importlib` to load a module from a specific file location.
-    The module is then registered in `sys.modules` under the provided name.
-
-    Args:
-        module_name (str): Name under which to register the module.
-
-    Returns:
-        ModuleType: The loaded Python module object.
-
-    Raises:
-        ImportError: If the module cannot be found or loaded.
-    """
-    module_path = os.path.join(os.path.dirname(__file__), "modules", f"{module_name}.py")
-
-    spec = importlib.util.spec_from_file_location(module_name, module_path)
-    if spec is None:
-        raise ImportError(f"Cannot find spec for {module_name} at {module_path}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(add_help="False", description=f"{SCRIPTNAME} <options>")
     parser.add_argument("-u",  "--url",            type=str, required=True)
@@ -200,6 +200,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("-c",  "--cookie",         type=str)
     parser.add_argument("-H",  "--headers",        type=ptmisclib.pairs, nargs="+")
     parser.add_argument("-r",  "--redirects",      action="store_true")
+    parser.add_argument("-vv",  "--verbose",       action="store_true")
     parser.add_argument("-C",  "--cache",          action="store_true")
     parser.add_argument("-j",  "--json",           action="store_true")
     parser.add_argument("-v",  "--version",        action='version', version=f'{SCRIPTNAME} {__version__}')
@@ -213,16 +214,12 @@ def parse_args() -> argparse.Namespace:
         sys.exit(0)
 
     args = parser.parse_args()
-    args.url = _strip_url_path(args.url)
+    args.url = urlunparse(urlparse(args.url)._replace(path='', params='', query='', fragment=''))
     args.headers = ptnethelper.get_request_headers(args)
     args.proxy = {"http": args.proxy, "https": args.proxy} if args.proxy else {}
 
     print_banner(SCRIPTNAME, __version__, args.json, 0)
     return args
-
-def _strip_url_path(url):
-    parsed = urlparse(url)
-    return urlunparse((parsed.scheme, parsed.netloc, '', '', '', ''))
 
 def main():
     global SCRIPTNAME

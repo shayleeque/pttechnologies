@@ -24,14 +24,18 @@ class OSCS:
         3) Report whether the server is case-insensitive (Windows) or case-sensitive (Unix/Linux).
         """
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
-        resource_url = self._find_static_resource()
-        if not resource_url:
+        resource = self._find_static_resource()
+        if not resource:
             ptprint("No static source found for test", "ERROR", not self.args.json, indent=4)
             return
 
-        lower_resp, ct_lower = self._fetch(resource_url)
-        upper_url      = self._make_mixed_url(resource_url)
-        upper_resp, ct_upper = self._fetch(upper_url)
+        resource_url, lower_resp, ct_lower = resource
+        upper_url      = self._make_alt_case_url(resource_url)
+
+        if resource_url == upper_url:
+            upper_resp, ct_upper = lower_resp, ct_lower
+        else:
+            upper_resp, ct_upper = self._fetch(upper_url)
 
         self._report(lower_resp, ct_lower, upper_resp, ct_upper)
 
@@ -43,41 +47,50 @@ class OSCS:
            reference to a static asset (.js, .css, .png, .jpg, .jpeg, .gif, .ico).
 
         Returns:
-            str: Full URL of the located resource, or None if none found.
+            tuple: (full URL, response, content_type), or None if none found.
         """
         base = self.args.url.rstrip('/')
         parsed_base = urlparse(base)
 
         favicon = base + '/favicon.ico'
-        resp, _ = self._fetch(favicon, allow_redirects=True)
-        if resp.status_code == 200:
-            return favicon
-        resp_home, _ = self._fetch(base + '/', allow_redirects=True)
-        html = getattr(resp_home, 'text', '') or ''
-        match = re.search(
-            r'(?:href|src)=["\']([^"\']+\.(?:js|css|png|jpg|jpeg|gif|ico))["\']', 
-            html, re.IGNORECASE
-        )
-        if not match:
+        resp, ct = self._fetch(favicon)
+
+        if resp.status_code in (301, 302):
+            ptprint(f"Error: Redirect detected to {resp.headers.get('Location')}", "ERROR", not self.args.json, indent=4)
+            return None
+        elif resp.status_code == 200:
+            return favicon, resp, ct
+
+        resp_home, _ = self._fetch(base + '/')
+
+        if resp_home.status_code in (301, 302):
+            ptprint(f"Error: Redirect to {resp_home.headers.get('Location')}","ERROR", not self.args.json, indent=4)
+            return None
+        elif resp_home.status_code != 200:
+            ptprint(f"Error: Homepage returned {resp_home.status_code}","ERROR", not self.args.json, indent=4)
             return None
 
-        candidate = match.group(1)
+        html = resp_home.text or ''
+        for match in re.finditer(
+            r'(?:href|src)=["\']([^"\']+\.(?:js|css|png|jpg|jpeg|gif|ico))["\']',
+            html,
+            re.IGNORECASE,
+        ):
+            candidate_url = urljoin(base + '/', match.group(1))
+            if urlparse(candidate_url).netloc != parsed_base.netloc:
+                continue
 
-        full_url = urljoin(base + '/', candidate)
-        parsed_cand = urlparse(full_url)
-        if parsed_cand.netloc != parsed_base.netloc:
-            return None
+            r, ct = self._fetch(candidate_url)
+            if r.status_code == 200:
+                return candidate_url, r, ct
+        return None
 
-        path = parsed_cand.path if parsed_cand.path.startswith('/') else '/' + parsed_cand.path
-        return parsed_base.scheme + '://' + parsed_base.netloc + path
-
-    def _fetch(self, url, allow_redirects=True):
+    def _fetch(self, url):
         """
         Send a GET request to the specified URL and return the response and its content type.
 
         Args:
             url (str): The URL to request.
-            allow_redirects (bool): Whether to follow HTTP redirects.
 
         Returns:
             tuple: (response object, content type string).
@@ -86,26 +99,36 @@ class OSCS:
             url=url, 
             method="GET",
             headers=self.args.headers,
-            allow_redirects=allow_redirects,
-            timeout=None
+            allow_redirects=False,
+            timeout=10
         )
         return resp, resp.headers.get('Content-Type', '')
 
-    def _make_mixed_url(self, resource_url):
+    def _make_alt_case_url(self, resource_url):
         """
-        Generate a variant of the resource URL with the filename portion converted to uppercase,
-        preserving the rest of the path, query, and fragment.
+        Flip the case of the filename in a URL.
+
+        - If it has any lowercase letters → make it ALL UPPER.
+        - Else → make it all lower.
+
+        Directory, query, and fragment stay the same; extra slashes are trimmed.
 
         Args:
-            resource_url (str): Original resource URL.
+            resource_url (str): Original URL.
 
         Returns:
-            str: Modified URL with uppercase filename.
+            str: URL with filename in opposite case.
         """
         parsed = urlparse(resource_url)
         dirname, filename = os.path.split(parsed.path)
-        upper = filename.upper()
-        new_path = new_path = dirname + '/' + filename.upper()
+
+        if any(c.islower() for c in filename):
+            new_name = filename.upper()
+        else:
+            new_name = filename.lower()
+
+        dirname = dirname.rstrip('/')
+        new_path = f"/{new_name}" if dirname == "" else f"{dirname}/{new_name}"
         return urlunparse(parsed._replace(path=new_path))
 
     def _report(self, r1, ct1, r2, ct2):

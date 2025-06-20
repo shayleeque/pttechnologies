@@ -26,7 +26,7 @@ class OSLPT1:
         else:
             self.ptjsonlib.add_properties({"os": "osUnix"})
             self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSLNK")
-            ptprint(f"OS detected: Unix / linux", "VULN", not self.args.json, indent=4)
+            ptprint(f"OS detected: Unix / Linux", "VULN", not self.args.json, indent=4)
 
 
 def run(args, ptjsonlib):

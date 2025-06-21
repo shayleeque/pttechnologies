@@ -106,15 +106,20 @@ class PtTechnologies:
 
         If homepage returns a redirect or a non-200 status code, the script exits early.
         """
-        # Home page request
-        self.args.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
-        if 300 <= self.args.resp_hp.status_code < 400:
-            self.ptjsonlib.end_error(f"Redirect to URL: {self.args.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
-        elif self.args.resp_hp.status_code != 200:
-            self.ptjsonlib.end_error(f"Webpage returns status code: {self.args.resp_hp.status_code}", self.args.json)
+        try:
 
-        # Nonexistent page request
-        self.args.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
+            # Send request to home page
+            self.args.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
+            if 300 <= self.args.resp_hp.status_code < 400:
+                self.ptjsonlib.end_error(f"Redirect to URL: {self.args.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
+            elif self.args.resp_hp.status_code != 200:
+                self.ptjsonlib.end_error(f"Webpage returns status code: {self.args.resp_hp.status_code}", self.args.json)
+
+            # Send request to nonexistent page
+            self.args.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
+
+        except requests.exceptions.RequestException as e:
+            self.ptjsonlib.end_error(f"Error retrieving initial responses: {e}", self.args.json)
 
 
 def _import_module_from_path(module_name: str) -> ModuleType:

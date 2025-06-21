@@ -1,0 +1,33 @@
+[
+    {
+      "category": "webserver",
+      "technology": "Apache",
+      "statuses": ["403", "403", "403", "403", "403", "414", "414", "414", "414"]
+    },
+    {
+        "category": "webserver",
+        "technology": "nginx",
+        "statuses": ["404","404","404","404","404","414","414","414","414"]
+    },
+    {
+      "category": "webserver",
+      "technology": "IIS",
+      "statuses": ["400", "400", "400", "400", "400", "400", "400", "400", "414"]
+    },
+    {
+      "category": "webserver",
+      "technology": "GWS",
+      "statuses": ["404", "404", "404", "404", "404", "404", "404", "404", "404"]
+    },
+    {
+      "category": "webserver",
+      "technology": "Caddy",
+      "statuses": ["500", "500", "500", "500", "500", "500", "500", "500", "500"]
+    },
+    {
+      "category": "webserver",
+      "technology": "Tomcat",
+      "statuses": ["404", "404", "404", "404", "404", "400", "400", "400", "400"]
+    }
+]
+  

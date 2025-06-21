@@ -1,0 +1,37 @@
+[
+    {
+      "extension": "php",
+      "category": "prgLanguage",
+      "technology": "PHP"
+    },
+    {
+      "extension": "asp",
+      "category": "prgLanguage",
+      "technology": "ASP"
+    },
+    {
+      "extension": "aspx",
+      "category": "prgLanguage",
+      "technology": "ASP.NET"
+    },
+    {
+      "extension": "jsp",
+      "category": "prgLanguage",
+      "technology": "JSP"
+    },
+    {
+      "extension": "jspx",
+      "category": "prgLanguage",
+      "technology": "JSPX"
+    },
+    {
+      "extension": "py",
+      "category": "prgLanguage",
+      "technology": "Python"
+    },
+    {
+      "extension": "html",
+      "category": "prgLanguage",
+      "technology": "HTML"
+    }
+]

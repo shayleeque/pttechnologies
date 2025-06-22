@@ -1,3 +1,17 @@
+"""
+Test OS detection via Case Sensitivity.
+
+This module implements a test that detects the underlying operating system (Windows vs Unix/Linux)
+based on the case sensitivity of static resource URLs. It does so by:
+
+1) Attempting to find a static resource (favicon or first referenced asset).
+2) Requesting the resource with original case and altered case (upper/lower).
+3) Comparing responses to infer case sensitivity of the server's file system,
+   which correlates with the OS type.
+
+Provides the OSCS class for running the test and a run() entry point function.
+"""
+
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 from ptlibs.http.http_client import HttpClient
@@ -8,14 +22,20 @@ import re
 
 __TESTLABEL__ = "Test OS detection via Case Sensitivity"
 
-
 class OSCS:
-    def __init__(self, args, ptjsonlib):
+    """
+    OSCS implements an OS detection test based on case sensitivity of static resources.
+
+    It tries to detect whether the underlying server OS is Windows (case-insensitive)
+    or Unix/Linux (case-sensitive) by comparing responses to differently cased resource URLs.
+    """
+
+    def __init__(self, args: object, ptjsonlib: object) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
 
-    def run(self):
+    def run(self) -> None:
         """
         Execute the OS detection test using case sensitivity of static resources.
 
@@ -47,7 +67,8 @@ class OSCS:
            reference to a static asset (.js, .css, .png, .jpg, .jpeg, .gif, .ico).
 
         Returns:
-            tuple: (full URL, response, content_type), or None if none found.
+            tuple or None: (full URL (str), response (requests.Response), content_type (str))
+            if a resource is found, else None.
         """
         base = self.args.url.rstrip('/')
         parsed_base = urlparse(base)
@@ -85,7 +106,7 @@ class OSCS:
                 return candidate_url, r, ct
         return None
 
-    def _fetch(self, url):
+    def _fetch(self, url: str) -> tuple:
         """
         Send a GET request to the specified URL and return the response and its content type.
 
@@ -96,7 +117,7 @@ class OSCS:
             tuple: (response object, content type string).
         """
         resp = self.http_client.send_request(
-            url=url, 
+            url=url,
             method="GET",
             headers=self.args.headers,
             allow_redirects=False,
@@ -104,7 +125,7 @@ class OSCS:
         )
         return resp, resp.headers.get('Content-Type', '')
 
-    def _make_alt_case_url(self, resource_url):
+    def _make_alt_case_url(self, resource_url: str) -> str:
         """
         Flip the case of the filename in a URL.
 
@@ -131,7 +152,7 @@ class OSCS:
         new_path = f"/{new_name}" if dirname == "" else f"{dirname}/{new_name}"
         return urlunparse(parsed._replace(path=new_path))
 
-    def _report(self, r1, ct1, r2, ct2):
+    def _report(self, r1, ct1, r2, ct2) -> None:
         """
         Compare the lowercase and uppercase responses and report the OS type.
 

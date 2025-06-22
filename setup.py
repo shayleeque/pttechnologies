@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="pttechnologies",
     version=__version__,
-    description="",
+    description="Testing tool for identifying technologies used by web applications",
     author="Penterep",
     author_email="info@penterep.com",
     url="https://www.penterep.com/",

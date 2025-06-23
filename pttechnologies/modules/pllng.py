@@ -35,26 +35,16 @@ class PLLNG:
     This class is responsible for detecting or handling language-specific logic
     within the application. It may interact with text data, perform analysis,
     or manage language resources.
-
-    Attributes:
-        args: Input arguments or configuration.
-        ptjsonlib: JSON utility library for logging results or vulnerabilities.
     """
 
-    def __init__(self, args, ptjsonlib):
-        """
-        Initializes the PLLNG detector.
-
-        Args:
-            args (Namespace): Command-line arguments including URL and headers.
-            ptjsonlib (object): JSON helper for reporting vulnerabilities and properties.
-        """
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
-        self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        json_path = os.path.join(current_dir, "../definitions/pllng.json")
-        self.extensions = self._load_extensions_from_json(json_path)
+        self.helpers = helpers
+        self.http_client = http_client
+        self.response_hp = resp_hp
+        self.response_404 = resp_404
+        self.extensions = self.helpers.load_definitions("pllng.json")
 
     def run(self):
         """
@@ -66,7 +56,7 @@ class PLLNG:
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
         base_url = self.args.url.rstrip("/")
-        resp, _ = self._fetch(base_url, allow_redirects=True)
+        resp = self.helpers.fetch(base_url, allow_redirects=True)
         html = resp.text
         result = self._find_language_by_link(html, base_url)
 
@@ -74,43 +64,6 @@ class PLLNG:
             result = self._dictionary_attack(base_url)
 
         self._report(result)
-
-    def _load_extensions_from_json(self, filename):
-        """
-        Loads programming language extensions and metadata from JSON file.
-
-        Args:
-            filename (str): Path to the JSON file with extension definitions.
-
-        Returns:
-            list: List of dictionaries containing extension info.
-        """
-        try:
-            with open(filename, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            ptprint(f"Error loading definitions: {e}", "ERROR", not self.args.json)
-            return []
-
-    def _fetch(self, url, allow_redirects=True):
-        """
-        Sends an HTTP GET request to the specified URL.
-
-        Args:
-            url (str): URL to fetch.
-            allow_redirects (bool, optional): Whether to follow redirects. Defaults to True.
-
-        Returns:
-            tuple: Response object and Content-Type header string.
-        """
-        resp = self.http_client.send_request(
-            url=url,
-            method="GET",
-            headers=self.args.headers,
-            allow_redirects=allow_redirects,
-            timeout=None
-        )
-        return resp, resp.headers.get("Content-Type", "")
 
     def _find_language_by_link(self, html, base_url):
         """
@@ -164,7 +117,7 @@ class PLLNG:
             for ext_entry in self.extensions:
                 ext = ext_entry["extension"]
                 test_url = f"{base_url}/{name}.{ext}"
-                resp, _ = self._fetch(test_url, allow_redirects=True)
+                resp = self._fetch(test_url, allow_redirects=True)
                 if resp.status_code == 200:
                     return ext_entry
         return None
@@ -186,12 +139,6 @@ class PLLNG:
             ptprint(f"It was not possible to identify the programming language", "VULN", not self.args.json, indent=4)
 
 
-def run(args, ptjsonlib):
-    """
-    Entry point for running the PLLNG detection.
-
-    Args:
-        args (Namespace): Command-line arguments.
-        ptjsonlib (object): JSON helper for reporting.
-    """
-    PLLNG(args, ptjsonlib).run()
+def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+    """Entry point for running the PLLNG detection."""
+    PLLNG(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()

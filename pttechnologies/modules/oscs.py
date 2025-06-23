@@ -30,10 +30,13 @@ class OSCS:
     or Unix/Linux (case-sensitive) by comparing responses to differently cased resource URLs.
     """
 
-    def __init__(self, args: object, ptjsonlib: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
-        self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
+        self.helpers = helpers
+        self.http_client = http_client
+        self.response_hp = resp_hp
+        self.response_404 = resp_404
 
     def run(self) -> None:
         """
@@ -171,5 +174,6 @@ class OSCS:
             ptprint("Identified OS: Unix / Linux", "VULN", not self.args.json, indent = 4)
 
 
-def run(args, ptjsonlib):
-    OSCS(args, ptjsonlib).run()
+def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+    """Entry point for running the OSCS module."""
+    OSCS(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()

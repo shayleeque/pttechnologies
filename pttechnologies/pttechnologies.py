@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 """
-    Copyright (c) 2025 Penterep Security s.r.o.
+Copyright (c) 2025 Penterep Security s.r.o.
 
-    pttechnologies - Testing tool for identifying technologies used by a web application
+pttechnologies - Testing tool for identifying technologies used by web applications
 
-    pttechnologies is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+pttechnologies is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    pttechnologies is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+pttechnologies is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with pttechnologies.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with pttechnologies.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import argparse
@@ -34,6 +34,7 @@ from ptlibs.threads import ptthreads, printlock
 from ptlibs.http.http_client import HttpClient
 
 from helpers._thread_local_stdout import ThreadLocalStdout
+from helpers.helpers import Helpers
 from _version import __version__
 
 import requests
@@ -45,6 +46,8 @@ class PtTechnologies:
         self.args        = args
         self._lock       = threading.Lock()
         self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
+        self.helpers     = Helpers(args=self.args, ptjsonlib=self.ptjsonlib, http_client=self.http_client)
+
         self._fetch_initial_responses()
 
         # Activate ThreadLocalStdout stdout proxy
@@ -81,8 +84,17 @@ class PtTechnologies:
                 buffer = StringIO()
                 self.thread_local_stdout.set_thread_buffer(buffer)
                 try:
-                    module.run(args=self.args, ptjsonlib=self.ptjsonlib)
+                    module.run(
+                        args=self.args,
+                        ptjsonlib=self.ptjsonlib,
+                        helpers=self.helpers,
+                        http_client=self.http_client,
+                        resp_hp=self.resp_hp,
+                        resp_404=self.resp_404
+                    )
+
                 except Exception as e:
+                    print(e)
                     error = e
                 else:
                     error = None
@@ -102,21 +114,21 @@ class PtTechnologies:
     def _fetch_initial_responses(self) -> None:
         """
         Sends initial HTTP requests to the homepage and a non-existent URL.
-        Stores responses in self.args.resp_hp and self.args.resp_404 for reuse across modules.
+        Stores responses in self.resp_hp and self.resp_404 for reuse across modules.
 
         If homepage returns a redirect or a non-200 status code, the script exits early.
         """
         try:
 
             # Send request to home page
-            self.args.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
-            if 300 <= self.args.resp_hp.status_code < 400:
-                self.ptjsonlib.end_error(f"Redirect to URL: {self.args.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
-            elif self.args.resp_hp.status_code != 200:
-                self.ptjsonlib.end_error(f"Webpage returns status code: {self.args.resp_hp.status_code}", self.args.json)
+            self.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
+            if 300 <= self.resp_hp.status_code < 400:
+                self.ptjsonlib.end_error(f"Redirect to URL: {self.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
+            elif self.resp_hp.status_code != 200:
+                self.ptjsonlib.end_error(f"Webpage returns status code: {self.resp_hp.status_code}", self.args.json)
 
             # Send request to nonexistent page
-            self.args.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
+            self.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
 
         except requests.exceptions.RequestException as e:
             self.ptjsonlib.end_error(f"Error retrieving initial responses: {e}", self.args.json)

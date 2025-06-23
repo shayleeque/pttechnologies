@@ -31,20 +31,13 @@ class WSHT:
     A discrepancy in response codes may indicate Apache or a similar server using such rules.
     """
 
-    def __init__(self, args, ptjsonlib):
-        """
-        Initializes the WSHT test.
-
-        Args:
-            args: Parsed arguments or configuration object, typically containing:
-                  - url (str): Base target URL
-                  - headers (dict): Optional HTTP headers
-                  - json (bool): Whether output should be printed in JSON format
-            ptjsonlib: Object used to record vulnerabilities and properties in JSON format.
-        """
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
-        self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
+        self.helpers = helpers
+        self.http_client = http_client
+        self.response_hp = resp_hp
+        self.response_404 = resp_404
 
     def run(self):
         """
@@ -72,12 +65,6 @@ class WSHT:
             ptprint(f"It is not possible to identify the web server, but it does not seem to be Apache", "INFO", not self.args.json, indent=4)
 
 
-def run(args, ptjsonlib):
-    """
-    Entry point to run the WSHT (Web Server .htaccess Test).
-
-    Args:
-        args: Parsed arguments passed to the module (e.g., from CLI).
-        ptjsonlib: A shared object for recording structured JSON output.
-    """
-    WSHT(args, ptjsonlib).run()
+def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+    """Entry point to run the WSHT (Web Server .htaccess Test)."""
+    WSHT(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()

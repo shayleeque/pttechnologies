@@ -21,18 +21,13 @@ __TESTLABEL__ = "Test OS detection via LPT1 path"
 
 
 class OSLPT1:
-    def __init__(self, args, ptjsonlib):
-        """
-        Initializes the OSLPT1 OS detector.
-
-        Args:
-            args (Namespace): Command-line arguments including URL and headers.
-            ptjsonlib (object): JSON helper for reporting vulnerabilities and properties.
-        """
-
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
-        self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
+        self.helpers = helpers
+        self.http_client = http_client
+        self.response_hp = resp_hp
+        self.response_404 = resp_404
 
     def run(self):
         """
@@ -56,13 +51,7 @@ class OSLPT1:
             ptprint(f"OS detected: Unix / Linux", "VULN", not self.args.json, indent=4)
 
 
-def run(args, ptjsonlib):
-    """
-    Entry point for running the OSLPT1 OS detection.
-
-    Args:
-        args (Namespace): Command-line arguments.
-        ptjsonlib (object): JSON helper for reporting.
-    """
-    OSLPT1(args, ptjsonlib).run()
+def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+    """Entry point for running the OSLPT1 OS detection."""
+    OSLPT1(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
 

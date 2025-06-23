@@ -18,7 +18,6 @@ Usage:
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 from ptlibs.http.http_client import HttpClient
-
 import json
 import os
 
@@ -31,21 +30,16 @@ class WSURLLEN:
     identify the web server technology based on response patterns.
     """
 
-    def __init__(self, args, ptjsonlib):
-        """
-        Initialize WSURLLEN test instance.
-
-        Args:
-            args: Parsed command-line arguments.
-            ptjsonlib: JSON interface for recording results.
-        """
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
-        self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
+        self.helpers = helpers
+        self.http_client = http_client
+        self.response_hp = resp_hp
+        self.response_404 = resp_404
+
         self.lengths = [1000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000]
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        json_path = os.path.join(current_dir, "../definitions/wsurllen.json")
-        self.definitions = self._load_definitions(json_path)
+        self.definitions = self.helpers.load_definitions("wsurllen.json")
 
     def run(self) -> None:
         """
@@ -69,6 +63,7 @@ class WSURLLEN:
             path = "/" + ("a" * l)
             full_url = base_url + path
             status = self._fetch_status(full_url)
+            #response = self.helpers.fetch(full_url).status_code
             statuses.append(status if status is not None else "None")
             if status is None:
                 blocked_long_url = True
@@ -89,7 +84,7 @@ class WSURLLEN:
         else:
             ptprint("No matching web server identified from URL length behavior.", "INFO", not self.args.json, indent=4)
 
-    def _fetch_status(self, url) -> None:
+    def _fetch_status(self, url: str) -> None:
         """
         Send a GET request to the specified URL and return the HTTP status code.
 
@@ -111,24 +106,7 @@ class WSURLLEN:
         except Exception:
             return None
 
-    def _load_definitions(self, path):
-        """
-        Load server signature definitions from a JSON file.
-
-        Args:
-            path: Path to the definitions JSON.
-
-        Returns:
-            List of server signature dictionaries.
-        """
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            ptprint(f"Error loading definitions: {e}", "ERROR", not self.args.json)
-            return []
-
-    def _identify_server(self, observed_statuses):
+    def _identify_server(self, observed_statuses: list):
         """
         Match observed response pattern against known server definitions.
 
@@ -144,12 +122,6 @@ class WSURLLEN:
         return None
 
 
-def run(args, ptjsonlib):
-    """
-    Entry point to run the WSURLLEN test.
-
-    Args:
-        args: Parsed CLI arguments.
-        ptjsonlib: JSON interface to store results.
-    """
-    WSURLLEN(args, ptjsonlib).run()
+def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+    """Entry point to run the WSURLLEN test. """
+    WSURLLEN(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()

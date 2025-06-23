@@ -38,7 +38,9 @@ pttechnologies -u htttps://www.example.com/ -ts OSCS OSLPT1 WSHT
    -ts  --tests       <test>          Specify one or more tests to perform:
                        OSCS           Test OS detection via Case Sensitivity
                        OSLPT1         Test OS detection via LPT1 path
+                       PLLNG          Test programming language detection via file extensions
                        WSHT           Test Apache detection via .ht access rule
+                       WSURLLEN       Test URL length behavior to identify web server
 
    -p   --proxy       <proxy>         Set proxy (e.g. http://127.0.0.1:8080)
    -T   --timeout     <miliseconds>   Set timeout (default 10)

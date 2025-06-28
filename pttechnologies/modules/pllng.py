@@ -117,7 +117,7 @@ class PLLNG:
             for ext_entry in self.extensions:
                 ext = ext_entry["extension"]
                 test_url = f"{base_url}/{name}.{ext}"
-                resp = self._fetch(test_url, allow_redirects=True)
+                resp = self.helpers.fetch(test_url, allow_redirects=True)
                 if resp.status_code == 200:
                     return ext_entry
         return None
@@ -136,7 +136,7 @@ class PLLNG:
             self.ptjsonlib.add_properties({"webProgrammingLanguage": f"webProgrammingLanguage{ext}"})
             ptprint(f"Programming language detected: {language}", "VULN", not self.args.json, indent=4)
         else:
-            ptprint(f"It was not possible to identify the programming language", "VULN", not self.args.json, indent=4)
+            ptprint(f"It was not possible to identify the programming language", "INFO", not self.args.json, indent=4)
 
 
 def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):

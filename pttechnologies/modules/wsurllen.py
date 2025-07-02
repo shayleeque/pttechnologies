@@ -71,7 +71,7 @@ class WSURLLEN:
         if self.args.verbose:
             ptprint("Server responses:", "INFO", not self.args.json,indent=4)
             for l, s in zip(self.lengths, statuses):
-                ptprint(f"  {l} chars [{s}]", "INFO", not self.args.json,indent=4)
+                ptprint(f"{l}\tchars [{s}]", "TEXT", not self.args.json,indent=10)
 
         if blocked_long_url:
             ptprint("Long URL are blocked", "INFO", not self.args.json,indent=4)
@@ -82,7 +82,7 @@ class WSURLLEN:
             self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-WSURL")
             self.ptjsonlib.add_properties({"webServer": f"webServer[{server}]"})
         else:
-            ptprint("No matching web server identified from URL length behavior.", "INFO", not self.args.json, indent=4)
+            ptprint("No matching web server identified from URL length behavior", "INFO", not self.args.json, indent=4)
 
     def _fetch_status(self, url: str) -> None:
         """

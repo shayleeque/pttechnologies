@@ -1,0 +1,34 @@
+[
+    {
+      "category": "webserver",
+      "technology": "nginx",
+      "order": ["server", "date", "content-type", "content-length"]
+    },
+    {
+        "category":"webserver",
+        "technology": "Tomcat",
+        "order": ["content-length","server","content-type","date"]
+    },
+    {
+        "category": "webserver",
+        "technology": "Apache",
+        "order": ["date","server","content-length","content-type"]
+    },
+    {
+        "category": "webserver",
+        "technology": "CloudFlare",
+        "order": ["date", "content-type", "content-length", "server"]
+
+    },
+    {
+        "category": "webserver",
+        "technology": "IIS",
+        "order": ["content-type", "content-length", "date"]
+    },
+    {
+        "category": "webserver",
+        "technology": "IIS",
+        "order": ["content-type", "server", "date", "content-length"]
+    }
+]
+  

@@ -1,0 +1,167 @@
+{
+    "headers": [
+      "Server",
+      "X-Powered-By",
+      "X-Generator",
+      "X-AspNet-Version",
+      "X-Framework",
+      "X-Runtime"
+    ],
+    "definitions": [
+      {
+        "category": "prgLanguage",
+        "technology": "PHP",
+        "content": "php"
+      },
+      {
+        "category": "webServer",
+        "technology": "Apache",
+        "content": "apache"
+      },
+      {
+        "category": "webServer",
+        "technology": "Nginx",
+        "content": "nginx"
+      },
+      {
+        "category": "webServer",
+        "technology": "Microsoft-IIS",
+        "content": "microsoft-iis"
+      },
+      {
+        "category": "webServer",
+        "technology": "Microsoft-HTTPAPI",
+        "content": "microsoft-httpapi"
+      },
+      {
+        "category": "webServer",
+        "technology": "LiteSpeed",
+        "content": "litespeed"
+      },
+      {
+        "category": "webServer",
+        "technology": "Caddy",
+        "content": "caddy"
+      },
+      {
+        "category": "framework",
+        "technology": "Nette Framework",
+        "content": "nette framework"
+      },
+      {
+        "category": "cms",
+        "technology": "Drupal",
+        "content": "drupal"
+      },
+      {
+        "category": "cms",
+        "technology": "WordPress",
+        "content": "wordpress"
+      },
+      {
+        "category": "framework",
+        "technology": "Laravel",
+        "content": "laravel"
+      },
+      {
+        "category": "framework",
+        "technology": "Symfony",
+        "content": "symfony"
+      },
+      {
+        "category": "framework",
+        "technology": "Django",
+        "content": "django"
+      },
+      {
+        "category": "framework",
+        "technology": "Flask",
+        "content": "flask"
+      },
+      {
+        "category": "framework",
+        "technology": "Express",
+        "content": "express"
+      },
+      {
+        "category": "prgLanguage",
+        "technology": "Python",
+        "content": "python"
+      },
+      {
+        "category": "prgLanguage",
+        "technology": "Node.js",
+        "content": "node.js"
+      },
+      {
+        "category": "prgLanguage",
+        "technology": "ASP.NET",
+        "content": "asp.net"
+      },
+      {
+        "category": "prgLanguage",
+        "technology": "Ruby",
+        "content": "ruby"
+      },
+      {
+        "category": "prgLanguage",
+        "technology": "Java",
+        "content": "java"
+      },
+      {
+        "category": "webServer",
+        "technology": "Tomcat",
+        "content": "tomcat"
+      },
+      {
+        "category": "webServer",
+        "technology": "Jetty",
+        "content": "jetty"
+      },
+      {
+        "category": "webServer",
+        "technology": "Undertow",
+        "content": "undertow"
+      },
+      {
+        "category": "framework",
+        "technology": "Spring Boot",
+        "content": "spring boot"
+      },
+      {
+        "category": "framework",
+        "technology": "Rails",
+        "content": "rails"
+      },
+      {
+        "category": "cms",
+        "technology": "Joomla",
+        "content": "joomla"
+      },
+      {
+        "category": "cms",
+        "technology": "Magento",
+        "content": "magento"
+      },
+      {
+        "category": "framework",
+        "technology": "CodeIgniter",
+        "content": "codeigniter"
+      },
+      {
+        "category": "framework",
+        "technology": "Zend Framework",
+        "content": "zend"
+      },
+      {
+        "category": "framework",
+        "technology": "CakePHP",
+        "content": "cakephp"
+      },
+      {
+        "category": "framework",
+        "technology": "Yii",
+        "content": "yii"
+      }
+    ]
+  }

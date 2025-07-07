@@ -3,7 +3,7 @@
 
 ## PTTECHNOLOGIES
 
-pttechnologies Testing tool for identifying technologies used by a web application
+Testing tool for identifying technologies used by web applications.
 
 ## Installation
 
@@ -28,18 +28,20 @@ source ~/.zshrc
 
 ## Usage examples
 ```
-pttechnologies -u htttps://www.example.com/
-pttechnologies -u htttps://www.example.com/ -ts OSCS OSLPT1 WSHT
+pttechnologies -u https://www.example.com/
+pttechnologies -u https://www.example.com/ -ts OSCS OSLPT1 WSHT PPLNG WSH
 ```
 
 ## Options
 ```
    -u   --url         <url>           Connect to URL
    -ts  --tests       <test>          Specify one or more tests to perform:
+                       HDRVAL         Test for the content of HTTP response headers
                        OSCS           Test OS detection via Case Sensitivity
                        OSLPT1         Test OS detection via LPT1 path
                        PLLNG          Test programming language detection via file extensions
                        WSHT           Test Apache detection via .ht access rule
+                       WSRPO          Test response-header order
                        WSURLLEN       Test URL length behavior to identify web server
 
    -p   --proxy       <proxy>         Set proxy (e.g. http://127.0.0.1:8080)

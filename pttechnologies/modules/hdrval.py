@@ -296,6 +296,14 @@ class HDRVAL:
             List of technology dictionaries.
         """
         technologies = []
+
+        os_match = re.search(r'\(([^)]+)\)', header_value)
+        if os_match:
+            os_content = os_match.group(1).strip()
+            if os_content not in ['codeit', '@RELEASE@']:
+                technologies.append({'name': os_content, 'version': None})
+        
+        cleaned_value = re.sub(r'\([^)]*\)', '', header_value)
         
         parts = re.split(r'\s+|\(|\)', header_value)
         
@@ -503,7 +511,8 @@ class HDRVAL:
                             'prgLanguage': 'Programming language',
                             'webServer': 'Web server',
                             'framework': 'Framework',
-                            'cms': 'CMS'
+                            'cms': 'CMS',
+                            'operatingSystem': 'Operating system'
                         }
                         category_text = f" ({category_map.get(tech['category'], tech['category'])})"
                     elif not is_classified:

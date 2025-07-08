@@ -308,7 +308,7 @@ class HDRVAL:
         """
         node_key = str(uuid.uuid4())
 
-        sw_type = f"sw{tech['category'].capitalize()}" if is_classified and tech.get('category') != 'unknown' else "swUnknown"
+        sw_type = f"sw{tech['category'].capitalize()}" if is_classified and tech.get('category') != 'unknown' else None
         version = tech.get('version') if tech.get('version') else None
         
         if is_classified:
@@ -318,17 +318,21 @@ class HDRVAL:
             full_header = tech.get('full_header', tech['name'])
             description = f"{header_name}: {full_header}"
 
+        properties = {}
+
+        if sw_type:
+            properties["type"] = sw_type
+        properties["name"] = tech['name']
+        if version:
+            properties["version"] = version
+        properties["description"] = description
+
         node = {
             "type": "sw",
             "key": node_key,
             "parent": None,
             "parentType": None,
-            "properties": {
-                "type": sw_type,
-                "name": tech['name'],
-                "version": version,
-                "description": description
-            },
+            "properties": properties,
             "vulnerabilities": []
         }
 

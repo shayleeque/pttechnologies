@@ -296,31 +296,42 @@ class HDRVAL:
             List of technology dictionaries.
         """
         technologies = []
+        parts = header_value.split()
 
-        os_match = re.search(r'\(([^)]+)\)', header_value)
-        if os_match:
-            os_content = os_match.group(1).strip()
-            if os_content not in ['codeit', '@RELEASE@']:
-                technologies.append({'name': os_content, 'version': None})
-        
-        cleaned_value = re.sub(r'\([^)]*\)', '', header_value)
-        
-        parts = re.split(r'\s+|\(|\)', header_value)
-        
         for part in parts:
             part = part.strip()
             if not part:
                 continue
-                
-            version_match = re.match(r'^([^/]+)/([^/\s]+)', part)
-            if version_match:
-                name = version_match.group(1)
-                version = version_match.group(2)
-                technologies.append({'name': name, 'version': version})
-            else:
-                if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*$', part):
-                    technologies.append({'name': part, 'version': None})
         
+            os_match = re.search(r'\(([^)]+)\)', part)
+            if os_match:
+                os_content = os_match.group(1).strip()
+                if os_content not in ['codeit', '@RELEASE@']:
+                    # Process the main part first (e.g., "Apache/2.4.54" from "Apache/2.4.54(Ubuntu)")
+                    main_part = re.sub(r'\([^)]*\)', '', part).strip()
+                    if main_part:
+                        version_match = re.match(r'^([^/]+)/([^/\s]+)', main_part)
+                        if version_match:
+                            name = version_match.group(1)
+                            version = version_match.group(2)
+                            technologies.append({'name': name, 'version': version})
+                        else:
+                            if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*$', main_part):
+                                technologies.append({'name': main_part, 'version': None})
+                    
+                    # Then add the OS
+                    technologies.append({'name': os_content, 'version': None})
+            else:
+                # Regular name/version pattern (e.g., "PHP/8.1.2", "OpenSSL/1.1.1n")
+                version_match = re.match(r'^([^/]+)/([^/\s]+)', part)
+                if version_match:
+                    name = version_match.group(1)
+                    version = version_match.group(2)
+                    technologies.append({'name': name, 'version': version})
+                else:
+                    # Just the technology name without version (e.g., "nginx")
+                    if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*$', part):
+                        technologies.append({'name': part, 'version': None})
         return technologies
 
     def _parse_powered_by_header(self, header_value: str) -> List[Dict[str, Optional[str]]]:
@@ -441,7 +452,19 @@ class HDRVAL:
         """
         node_key = str(uuid.uuid4())
 
-        sw_type = f"sw{tech['category'].capitalize()}" if is_classified and tech.get('category') != 'unknown' else None
+        category_mapping = {
+            'prgLanguage': 'swPrgLanguage',
+            'webServer': 'swWebServer',
+            'webServerModule': 'swWebServerModule',
+            'framework': 'swFramework',
+            'cms': 'swCms',
+            'operatingSystem': 'swOperatingSystem'
+        }
+
+        sw_type = None
+        if is_classified and tech.get('category') != 'unknown':
+            sw_type = category_mapping.get(tech['category'])
+        
         version = tech.get('version') if tech.get('version') else None
         
         if is_classified:
@@ -510,6 +533,7 @@ class HDRVAL:
                         category_map = {
                             'prgLanguage': 'Programming language',
                             'webServer': 'Web server',
+                            'webServerModule': 'Web server module',
                             'framework': 'Framework',
                             'cms': 'CMS',
                             'operatingSystem': 'Operating system'

@@ -44,6 +44,16 @@
         "content": "caddy"
       },
       {
+        "category": "webServer",
+        "technology": "Cloudflare",
+        "content": "cloudflare"
+      },
+      {
+        "category": "webServer",
+        "technology": "CloudFront",
+        "content": "CloudFront"
+      },
+      {
         "category": "framework",
         "technology": "Nette Framework",
         "content": "nette framework"
@@ -162,6 +172,136 @@
         "category": "framework",
         "technology": "Yii",
         "content": "yii"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Ubuntu Linux",
+        "content": "ubuntu"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Debian Linux",
+        "content": "debian"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Windows",
+        "content": "win64"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Windows",
+        "content": "win32"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "CentOS Linux",
+        "content": "centos"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Red Hat Linux",
+        "content": "red hat"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Raspbian Linux",
+        "content": "raspbian"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Alpine Linux",
+        "content": "alpine"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Fedora Linux",
+        "content": "fedora"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Arch Linux",
+        "content": "arch linux"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "FreeBSD",
+        "content": "freebsd"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "SUSE Linux",
+        "content": "suse"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Gentoo Linux",
+        "content": "gentoo"
+      },
+      {
+        "category": "operatingSystem",
+        "technology": "Unix",
+        "content": "unix"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_ssl",
+        "content": "mod_ssl"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_fcgid",
+        "content": "mod_fcgid"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_php",
+        "content": "mod_php"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_perl",
+        "content": "mod_perl"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_wsgi",
+        "content": "mod_wsgi"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_python",
+        "content": "mod_python"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_jk",
+        "content": "mod_jk"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_proxy",
+        "content": "mod_proxy"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_wsgi-express",
+        "content": "mod_wsgi-express"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_lua",
+        "content": "mod_lua"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_auth_passthrough",
+        "content": "mod_auth_passthrough"
+      },
+      {
+        "category": "webServerModule",
+        "technology": "mod_bwlimited",
+        "content": "mod_bwlimited"
       }
     ]
-  }
+}

@@ -231,8 +231,8 @@ class HDRVAL:
                 if combined[header_name]['value'] != header_value:
                     if header_name.lower() in server_headers:
                         combined[header_name] = {
-                            'value': header_value,
-                            'sources': ['400', '200']
+                            'value': f"{combined[header_name]['value']} | {header_value}",
+                            'sources': ['200', '400']
                         }
                     else:
                         combined[header_name]['sources'].append('400')

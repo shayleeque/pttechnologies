@@ -34,6 +34,7 @@ from ptlibs.threads import ptthreads, printlock
 from ptlibs.http.http_client import HttpClient
 
 from helpers._thread_local_stdout import ThreadLocalStdout
+from helpers.stored_responses import StoredResponses
 from helpers.helpers import Helpers
 from _version import __version__
 
@@ -47,8 +48,7 @@ class PtTechnologies:
         self._lock       = threading.Lock()
         self.http_client = HttpClient(args=self.args, ptjsonlib=self.ptjsonlib)
         self.helpers     = Helpers(args=self.args, ptjsonlib=self.ptjsonlib, http_client=self.http_client)
-
-        self._fetch_initial_responses()
+        self.stored_responses = self._fetch_initial_responses()
 
         # Activate ThreadLocalStdout stdout proxy
         self.thread_local_stdout = ThreadLocalStdout(sys.stdout)
@@ -89,11 +89,11 @@ class PtTechnologies:
                         ptjsonlib=self.ptjsonlib,
                         helpers=self.helpers,
                         http_client=self.http_client,
-                        resp_hp=self.resp_hp,
-                        resp_404=self.resp_404
+                        responses=self.stored_responses
                     )
 
                 except Exception as e:
+                    ptprint(f"{module_name.upper()}: {e}", "ERROR", not self.args.json)
                     error = e
                 else:
                     error = None
@@ -110,28 +110,51 @@ class PtTechnologies:
             ptprint(f"Error running module '{module_name}': {e}", "ERROR", not self.args.json)
 
 
-    def _fetch_initial_responses(self) -> None:
+    def _fetch_initial_responses(self) -> StoredResponses:
         """
-        Sends initial HTTP requests to the homepage and a non-existent URL.
-        Stores responses in self.resp_hp and self.resp_404 for reuse across modules.
+        Sends initial HTTP requests to gather key baseline responses and stores them for reuse.
 
-        If homepage returns a redirect or a non-200 status code, the script exits early.
+        Performs three requests:
+        1. A GET request to the homepage URL (self.args.url), without following redirects.
+        If the response is a redirect (3xx) or a non-200 status, the script exits early.
+        2. A GET request to a deliberately non-existent URL to obtain a known 404 response.
+        3. A low-level/raw request to provoke a 400-like response, useful for fingerprinting or error detection.
+
+        The collected responses are stored together in self.stored_responses as a StoredResponses dataclass instance.
+
+        Returns:
+            StoredResponses: A dataclass instance containing the homepage response, 404 response,
+                            and the raw 400-like response.
+        Raises:
+            Exits the script via self.ptjsonlib.end_error() if any of the requests fail
+            or return unexpected status codes.
         """
         try:
-
             # Send request to home page
-            self.resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
-            if 300 <= self.resp_hp.status_code < 400:
+            resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
+            # Handle non 200 statuses
+            if 300 <= resp_hp.status_code < 400:
                 self.ptjsonlib.end_error(f"Redirect to URL: {self.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
-            elif self.resp_hp.status_code != 200:
+            elif resp_hp.status_code != 200:
                 self.ptjsonlib.end_error(f"Webpage returns status code: {self.resp_hp.status_code}", self.args.json)
 
             # Send request to nonexistent page
-            self.resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
+            resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)
+
+            # Send raw request to raise 400 status code
+            raw_resp_400 = self.helpers._get_bad_request_response(self.args.url)
+
+            # Create and store the responses container
+            self.stored_responses = StoredResponses(
+                resp_hp=resp_hp,
+                resp_404=resp_404,
+                raw_resp_400=raw_resp_400
+            )
+
+            return self.stored_responses
 
         except requests.exceptions.RequestException as e:
-            self.ptjsonlib.end_error(f"Error retrieving initial responses: {e}", self.args.json)
-
+            self.ptjsonlib.end_error(f"Error retrieving initial responses:", details=e, condition=self.args.json)
 
 def _import_module_from_path(module_name: str) -> ModuleType:
     """

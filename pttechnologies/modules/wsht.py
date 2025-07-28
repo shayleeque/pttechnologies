@@ -12,13 +12,14 @@ Contains:
 - run() function as an entry point for running the test.
 
 Usage:
-    run(args, ptjsonlib)
+    WSHT(args, ptjsonlib, helpers, http_client, responses).run()
 """
+
+from helpers.stored_responses import StoredResponses
 
 from ptlibs import ptjsonlib, ptmisclib, ptnethelper
 from ptlibs.ptprinthelper import ptprint
 
-from ptlibs.http.http_client import HttpClient
 
 __TESTLABEL__ = "Test Apache detection via .ht access rule"
 
@@ -31,13 +32,15 @@ class WSHT:
     A discrepancy in response codes may indicate Apache or a similar server using such rules.
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
 
     def run(self):
         """
@@ -65,6 +68,6 @@ class WSHT:
             ptprint(f"It is not possible to identify the web server, but it does not seem to be Apache", "INFO", not self.args.json, indent=4)
 
 
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point to run the WSHT (Web Server .htaccess Test)."""
-    WSHT(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
+    WSHT(args, ptjsonlib, helpers, http_client, responses).run()

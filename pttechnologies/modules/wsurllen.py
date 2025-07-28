@@ -12,12 +12,14 @@ Includes:
 - run() function as an entry point to execute the test.
 
 Usage:
-    run(args, ptjsonlib)
+    WSURLLEN(args, ptjsonlib, helpers, http_client, responses).run()
 """
 
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
-from ptlibs.http.http_client import HttpClient
+
+from helpers.stored_responses import StoredResponses
+
 import json
 import os
 
@@ -30,13 +32,15 @@ class WSURLLEN:
     identify the web server technology based on response patterns.
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
 
         self.lengths = [1000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000]
         self.definitions = self.helpers.load_definitions("wsurllen.json")
@@ -62,8 +66,7 @@ class WSURLLEN:
         for l in self.lengths:
             path = "/" + ("a" * l)
             full_url = base_url + path
-            status = self._fetch_status(full_url)
-            #response = self.helpers.fetch(full_url).status_code
+            status = str(self.helpers.fetch(full_url).status_code)
             statuses.append(status if status is not None else "None")
             if status is None:
                 blocked_long_url = True
@@ -84,28 +87,6 @@ class WSURLLEN:
         else:
             ptprint("No matching web server identified from URL length behavior", "INFO", not self.args.json, indent=4)
 
-    def _fetch_status(self, url: str) -> None:
-        """
-        Send a GET request to the specified URL and return the HTTP status code.
-
-        Args:
-            url: Full URL to request.
-
-        Returns:
-            HTTP status code as string, or None if request failed.
-        """
-        try:
-            response = self.http_client.send_request(
-                url=url,
-                method="GET",
-                headers=self.args.headers,
-                allow_redirects=False,
-                timeout=10
-            )
-            return str(response.status_code)
-        except Exception:
-            return None
-
     def _identify_server(self, observed_statuses: list):
         """
         Match observed response pattern against known server definitions.
@@ -122,6 +103,6 @@ class WSURLLEN:
         return None
 
 
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
-    """Entry point to run the WSURLLEN test. """
-    WSURLLEN(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
+    """Entry point to run the WSURLLEN test."""
+    WSURLLEN(args, ptjsonlib, helpers, http_client, responses).run()

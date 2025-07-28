@@ -10,24 +10,28 @@ Classes:
 
 Functions:
     run: Entry point to execute the detection.
-"""
 
+Usage:
+    OSLPT1(args, ptjsonlib, helpers, http_client, responses).run()
+
+"""
+from helpers.stored_responses import StoredResponses
 from ptlibs import ptjsonlib, ptmisclib, ptnethelper
 from ptlibs.ptprinthelper import ptprint
-
-from ptlibs.http.http_client import HttpClient
 
 __TESTLABEL__ = "Test OS detection via LPT1 path"
 
 
 class OSLPT1:
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
 
     def run(self):
         """
@@ -50,8 +54,6 @@ class OSLPT1:
             self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSLNK")
             ptprint(f"OS detected: Unix / Linux", "VULN", not self.args.json, indent=4)
 
-
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point for running the OSLPT1 OS detection."""
-    OSLPT1(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
-
+    OSLPT1(args, ptjsonlib, helpers, http_client, responses).run()

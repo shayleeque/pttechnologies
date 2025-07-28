@@ -10,15 +10,21 @@ based on the case sensitivity of static resource URLs. It does so by:
    which correlates with the OS type.
 
 Provides the OSCS class for running the test and a run() entry point function.
+
+Usage:
+    OSCS(args, ptjsonlib, helpers, http_client, responses).run()
 """
+
+import os
+import re
+from urllib.parse import urlparse, urlunparse, urljoin
+
+from helpers.stored_responses import StoredResponses
 
 from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 from ptlibs.http.http_client import HttpClient
 
-from urllib.parse import urlparse, urlunparse, urljoin
-import os
-import re
 
 __TESTLABEL__ = "Test OS detection via Case Sensitivity"
 
@@ -30,13 +36,15 @@ class OSCS:
     or Unix/Linux (case-sensitive) by comparing responses to differently cased resource URLs.
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
 
     def run(self) -> None:
         """
@@ -119,13 +127,7 @@ class OSCS:
         Returns:
             tuple: (response object, content type string).
         """
-        resp = self.http_client.send_request(
-            url=url,
-            method="GET",
-            headers=self.args.headers,
-            allow_redirects=False,
-            timeout=10
-        )
+        resp = self.helpers.fetch(url)
         return resp, resp.headers.get('Content-Type', '')
 
     def _make_alt_case_url(self, resource_url: str) -> str:
@@ -174,6 +176,6 @@ class OSCS:
             ptprint("Identified OS: Unix / Linux", "VULN", not self.args.json, indent = 4)
 
 
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point for running the OSCS module."""
-    OSCS(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
+    OSCS(args, ptjsonlib, helpers, http_client, responses).run()

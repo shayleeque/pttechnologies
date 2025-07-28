@@ -7,20 +7,19 @@ technologies or software used by the target web server (e.g., frameworks, CMS, p
 It examines headers such as `Server`, `X-Powered-By`, and `X-Generator`, parses their values,
 and attempts to classify the extracted technology information using a definitions file (`hdrval.json`).
 
-Modified to also make a raw 400 request to collect additional headers that might not be present in 200 responses.
-
 Includes:
 - HDRVAL class to perform header parsing and classification.
 - run() function as an entry point to execute the test.
 
 Usage:
-    run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404)
+    HDRVAL(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
 """
+
 import re
 import uuid
-import socket
 import ssl
-from http.client import HTTPConnection, HTTPResponse, HTTPSConnection
+from helpers.stored_responses import StoredResponses
+
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlparse
 from ptlibs.ptprinthelper import ptprint
@@ -29,16 +28,18 @@ __TESTLABEL__ = "Test for the content of HTTP response headers"
 
 
 class HDRVAL:
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
-        """
-        Initialize the HDRVAL test with provided components and load header definitions.
-        """
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
+        """Initialize the HDRVAL test with provided components and load header definitions."""
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
+        self.raw_response_400 = responses.raw_resp_400
+
         self.definitions = self.helpers.load_definitions("hdrval.json")
 
         self.target_headers = self.definitions.get("headers", [
@@ -49,15 +50,15 @@ class HDRVAL:
         """
         Execute the HDRVAL test logic.
 
-        Analyzes the headers from the HTTP response (200), makes an additional raw request
-        to get 400 response headers, combines them, parses their content to extract
+        Analyzes the headers from the HTTP response (200) and raw HTTP response (400),
+        combines them, parses their content to extract
         technologies, classifies known ones based on definitions, and reports the results.
         """
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
         headers_200 = self._get_response_headers(self.response_hp)
 
-        response_400 = self.helpers._get_bad_request_response(self.args.url)
+        response_400 = self.raw_response_400
         headers_400 = self._get_response_headers(response_400) if response_400 else {}
 
         combined_headers = self._combine_headers(headers_200, headers_400)
@@ -490,6 +491,6 @@ class HDRVAL:
             self._add_software_node(tech, is_classified)
 
 
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point to run the HDRVAL test."""
-    HDRVAL(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
+    HDRVAL(args, ptjsonlib, helpers, http_client, responses).run()

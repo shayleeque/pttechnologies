@@ -13,14 +13,18 @@ Classes:
 
 Functions:
     run: Entry point to execute the detection.
+
+Usage:
+    PLLNG(args, ptjsonlib, helpers, http_client, responses).run()
+
 """
 
 import json
 import os
 from urllib.parse import urlparse, urljoin
 
+from helpers.stored_responses import StoredResponses
 from ptlibs import ptjsonlib, ptmisclib, ptnethelper
-from ptlibs.http.http_client import HttpClient
 from ptlibs.ptprinthelper import ptprint
 
 from bs4 import BeautifulSoup
@@ -37,26 +41,29 @@ class PLLNG:
     or manage language resources.
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, resp_hp: object, resp_404: object) -> None:
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
+
         self.extensions = self.helpers.load_definitions("pllng.json")
 
     def run(self):
         """
         Runs the programming language detection process.
 
-        Fetches the base URL, tries to detect programming language by examining
-        linked resources or by dictionary attack, then reports the result.
+        Uses a pre-fetched homepage response.
+        Detects programming language by examining linked resources or, if that fails,
+        by dictionary attack, then reports the result.
         """
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
-
         base_url = self.args.url.rstrip("/")
-        resp = self.helpers.fetch(base_url, allow_redirects=True)
+        resp = self.response_hp
         html = resp.text
         result = self._find_language_by_link(html, base_url)
 
@@ -138,7 +145,6 @@ class PLLNG:
         else:
             ptprint(f"It was not possible to identify the programming language", "INFO", not self.args.json, indent=4)
 
-
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point for running the PLLNG detection."""
-    PLLNG(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
+    PLLNG(args, ptjsonlib, helpers, http_client, responses).run()

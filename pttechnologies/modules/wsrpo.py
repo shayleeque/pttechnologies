@@ -9,14 +9,15 @@ Includes:
 - run() function as an entry point to execute the test.
 
 Usage:
-    run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404)
-"""
-import socket
-import ssl
+    WSRPO(args, ptjsonlib, helpers, http_client, responses).run()
 
-from http.client import HTTPConnection, HTTPResponse, HTTPSConnection
-from typing import List, Tuple, Any
-from urllib.parse import urlparse
+"""
+
+from typing import List, Tuple
+
+from helpers.stored_responses import StoredResponses
+
+from ptlibs.http.raw_http_client import RawHttpResponse
 from ptlibs.ptprinthelper import ptprint
 
 __TESTLABEL__ = "Test response-header order"
@@ -29,49 +30,39 @@ class WSRPO:
     of response headers returned in a 400 Bad Request HTTP response.
 
     The detection is based on predefined header order definitions loaded
-    from a JSON file. It sends specially crafted HTTP requests to induce
-    a 400 error and extracts the order of selected headers for matching.
+    from a JSON file. It extracts the order of selected headers for matching.
     """
 
-    def __init__(self, args: object, ptjsonlib: object, helpers: object,
-                 http_client: object, resp_hp: object, resp_404: object) -> None:
-        """
-        Initialize the WSRPO test with necessary components.
-
-        Args:
-            args: Command-line or runtime arguments containing URL, verbosity, etc.
-            ptjsonlib: JSON library instance for adding vulnerabilities/properties.
-            helpers: Helper utilities (e.g., for loading definitions).
-            http_client: HTTP client instance to perform requests.
-            resp_hp: Placeholder for HTTP response helper (unused here).
-            resp_404: Placeholder for 404 response handling (unused here).
-        """
+    def __init__(self, args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses) -> None:
+        """Initialize the WSRPO test with necessary components."""
         self.args = args
         self.ptjsonlib = ptjsonlib
         self.helpers = helpers
         self.http_client = http_client
-        self.response_hp = resp_hp
-        self.response_404 = resp_404
+
+        # Unpack stored responses
+        self.response_hp = responses.resp_hp
+        self.response_404 = responses.resp_404
+        self.raw_response_400 = responses.raw_resp_400
+
         self.definitions = self.helpers.load_definitions("wsrpo.json")
 
     def run(self) -> None:
         """
         Execute the response header order detection test.
 
-        Sends HTTP requests designed to trigger 400 Bad Request responses,
-        then analyzes the order of certain HTTP headers in the response.
+        Analyzes the order of certain HTTP headers in a pre-obtained 400 Bad Request response.
         If a known header order is matched, it identifies the web server.
 
         Prints test progress and results depending on verbosity and output mode.
         """
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
-        response = self.helpers._get_bad_request_response(self.args.url)
-        if response is None:
+        if self.raw_response_400 is None:
             ptprint("Could not induce 400 Bad Request", "INFO", not self.args.json,indent=4)
             return
 
-        raw_headers = self._read_raw_headers(response)
+        raw_headers = self._read_raw_headers(self.raw_response_400)
         order = self._extract_order(raw_headers)
         technology = self._match_order(order)
 
@@ -84,12 +75,12 @@ class WSRPO:
             ptprint("Web-server could not be identified by header order", "INFO", not self.args.json,indent=4)
 
     @staticmethod
-    def _read_raw_headers(resp: HTTPResponse) -> List[Tuple[bytes, bytes]]:
+    def _read_raw_headers(resp: RawHttpResponse) -> List[Tuple[bytes, bytes]]:
         """
-        Extract raw response headers from an HTTPResponse object.
+        Extract raw response headers from an RawHttpResponse object.
 
         Args:
-            resp: HTTPResponse object.
+            resp: RawHttpResponse object.
 
         Returns:
             List of tuples (header_name_bytes, header_value_bytes).
@@ -169,6 +160,6 @@ class WSRPO:
             self.ptjsonlib.add_properties({"webServer": key})
             ptprint(f"Identified WS: {tech}", "VULN", not self.args.json, indent=4)
 
-def run(args, ptjsonlib, helpers, http_client, resp_hp, resp_404):
+def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point to run the WSRPO test."""
-    WSRPO(args, ptjsonlib, helpers, http_client, resp_hp, resp_404).run()
+    WSRPO(args, ptjsonlib, helpers, http_client, responses).run()

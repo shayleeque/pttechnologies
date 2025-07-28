@@ -94,7 +94,6 @@ class PtTechnologies:
                     )
 
                 except Exception as e:
-                    print(e)
                     error = e
                 else:
                     error = None
@@ -221,7 +220,8 @@ def get_help():
             ["-a",  "--user-agent",             "<a>",              "Set User-Agent header"],
             ["-H",  "--headers",                "<header:value>",   "Set custom header(s)"],
             ["-r",  "--redirects",              "",                 "Follow redirects (default False)"],
-            ["-C",  "--cache",                  "",                 "Cache HTTP communication (load from tmp in future)"],
+            ["-C",  "--cache",                  "",                 "Cache HTTP communication"],
+            ["-vv",  "--verbose",               "",                 "Enable verbose mode"],
             ["-v",  "--version",                "",                 "Show script version and exit"],
             ["-h",  "--help",                   "",                 "Show this help message and exit"],
             ["-j",  "--json",                   "",                 "Output in JSON format"],

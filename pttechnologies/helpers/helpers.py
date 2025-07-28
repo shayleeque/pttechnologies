@@ -10,6 +10,7 @@ import json
 import os
 
 from ptlibs.http.http_client import HttpClient
+from ptlibs.http.raw_http_client import RawHttpResponse
 from ptlibs.ptprinthelper import ptprint
 
 class Helpers:
@@ -66,4 +67,61 @@ class Helpers:
             return response
 
         except Exception as e:
+            return None
+
+    def _get_bad_request_response(self, base_url: str) -> RawHttpResponse | None:
+        """
+        Attempt to induce a 400 Bad Request response by sending raw malformed requests.
+
+        Tries several methods:
+        - Request path "/%"
+        - Request with "Host" header set to "%"
+        - Request with a header missing colon
+
+        Args:
+            base_url: The base URL to target.
+
+        Returns:
+            RawHttpResponse object with status 400 if successful, else None.
+        """
+        base_url = base_url.rstrip("/")
+
+        r = self._raw_request(base_url, "/%")
+        if r and r.status == 400:
+            return r
+
+        r = self._raw_request(base_url, "/", extra_headers={"Host": "%"})
+        if r and r.status == 400:
+            return r
+
+        r = self._raw_request(base_url, "/", extra_headers={"BadHeaderWithoutColon": ""})
+        if r and r.status == 400:
+            return r
+
+        return None
+
+    def _raw_request(self, base_url: str, path: str, extra_headers: dict[str, str] | None = None) -> RawHttpResponse | None:
+        """
+        Send a raw HTTP GET request to the given URL with optional extra headers.
+
+        Merges default headers with extra_headers, extra_headers take precedence.
+
+        Returns RawHttpResponse on success, or None on failure (e.g., timeout, SSL error).
+        """
+        url = base_url.rstrip("/") + path
+
+        # Merge self.args.headers with extra_headers, extra_headers take precedence
+        final_headers = dict(getattr(self.args, "headers", {}) or {})
+        if extra_headers:
+            final_headers.update(extra_headers)
+        try:
+            response = self.http_client.send_raw_request(
+                url=url,
+                method="GET",
+                headers=final_headers,
+                timeout=getattr(self.args, 'timeout', 10),
+                proxies=getattr(self.args, 'proxy', None)
+            )
+            return response
+        except (socket.timeout, ssl.SSLError, OSError) as e:
             return None

@@ -66,7 +66,7 @@ class WSRPO:
         """
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
-        response = self._get_bad_request_response(self.args.url)
+        response = self.helpers._get_bad_request_response(self.args.url)
         if response is None:
             ptprint("Could not induce 400 Bad Request", "INFO", not self.args.json,indent=4)
             return
@@ -82,77 +82,6 @@ class WSRPO:
             self._report(technology)
         else:
             ptprint("Web-server could not be identified by header order", "INFO", not self.args.json,indent=4)
-
-    def _raw_request(self, base_url: str, path: str, extra_headers: dict[str, str] | None = None) -> HTTPResponse | None:
-        """
-        Perform a low-level HTTP GET request to a given URL and path with optional headers.
-
-        Args:
-            base_url: The base URL including scheme and hostname.
-            path: The URL path to request.
-            extra_headers: Optional dictionary of additional HTTP headers to send.
-
-        Returns:
-            HTTPResponse object on success, or None on failure (e.g., timeout, SSL error).
-        """
-        p = urlparse(base_url)
-        is_https = p.scheme == "https"
-        port = p.port or (443 if is_https else 80)
-
-        conn_cls = HTTPSConnection if is_https else HTTPConnection
-        kw: dict[str, Any] = {}
-        if is_https:
-            kw["context"] = ssl._create_unverified_context()
-
-        conn = conn_cls(p.hostname, port, timeout=self.args.timeout, **kw)
-        try:
-            conn.putrequest("GET", path)
-
-            host_hdr = p.hostname if p.port in (None, 80, 443) else f"{p.hostname}:{p.port}"
-            conn.putheader("Host", host_hdr)
-
-            if extra_headers:
-                for k, v in extra_headers.items():
-                    conn.putheader(k, v)
-            conn.endheaders()
-            return conn.getresponse()
-        except (ssl.SSLError, socket.timeout, OSError):
-            return None
-        finally:
-            conn.close()
-
-
-    def _get_bad_request_response(self, base_url: str) -> HTTPResponse | None:
-        """
-        Attempt to induce a 400 Bad Request response by sending malformed requests.
-
-        Tries several methods:
-        - Request path "/%"
-        - Request with "Host" header set to "%"
-        - Request with a header missing colon
-
-        Args:
-            base_url: The base URL to target.
-
-        Returns:
-            HTTPResponse object with status 400 if successful, else None.
-        """
-        base_url = base_url.rstrip("/")
-
-        r = self._raw_request(base_url, "/%")
-        if r and r.code == 400:
-            return r
-
-        r = self._raw_request(base_url, "/", extra_headers={"Host": "%"})
-        if r and r.code == 400:
-            return r
-
-        r = self._raw_request(base_url, "/",
-                            extra_headers={"BadHeaderWithoutColon": ""})
-        if r and r.code == 400:
-            return r
-
-        return None
 
     @staticmethod
     def _read_raw_headers(resp: HTTPResponse) -> List[Tuple[bytes, bytes]]:

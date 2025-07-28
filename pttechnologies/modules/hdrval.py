@@ -40,7 +40,7 @@ class HDRVAL:
         self.response_hp = resp_hp
         self.response_404 = resp_404
         self.definitions = self.helpers.load_definitions("hdrval.json")
-        
+
         self.target_headers = self.definitions.get("headers", [
             "Server", "X-Powered-By", "X-Generator"
         ])
@@ -56,19 +56,19 @@ class HDRVAL:
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
         headers_200 = self._get_response_headers(self.response_hp)
-        
-        response_400 = self._get_bad_request_response(self.args.url)
+
+        response_400 = self.helpers._get_bad_request_response(self.args.url)
         headers_400 = self._get_response_headers(response_400) if response_400 else {}
-        
+
         combined_headers = self._combine_headers(headers_200, headers_400)
-        
+
         if not combined_headers:
             ptprint("No headers available for analysis", "INFO", not self.args.json, indent=4)
             return
 
         headers_found = {}
         header_sources = {}
-        
+
         for header_name in self.target_headers:
             header_value = self._get_header_value(combined_headers, header_name)
             if header_value:
@@ -85,7 +85,7 @@ class HDRVAL:
         for header_name, header_value in headers_found.items():
             technologies = self._parse_header_value(header_value, header_name)
             sources = header_sources[header_name]
-            
+
             for tech in technologies:
                 classified = self._classify_technology(tech, header_value, header_name)
                 if classified:
@@ -103,73 +103,6 @@ class HDRVAL:
 
         self._report(found_technologies, unclassified_technologies, headers_found, header_sources)
 
-    def _raw_request(self, base_url: str, path: str, extra_headers: dict[str, str] | None = None) -> HTTPResponse | None:
-        """
-        Perform a low-level HTTP GET request to a given URL and path with optional headers.
-        Same implementation as in WSRPO module.
-
-        Args:
-            base_url: The base URL including scheme and hostname.
-            path: The URL path to request.
-            extra_headers: Optional dictionary of additional HTTP headers to send.
-
-        Returns:
-            HTTPResponse object on success, or None on failure (e.g., timeout, SSL error).
-        """
-        p = urlparse(base_url)
-        is_https = p.scheme == "https"
-        port = p.port or (443 if is_https else 80)
-
-        conn_cls = HTTPSConnection if is_https else HTTPConnection
-        kw: dict[str, Any] = {}
-        if is_https:
-            kw["context"] = ssl._create_unverified_context()
-
-        conn = conn_cls(p.hostname, port, timeout=getattr(self.args, 'timeout', 10), **kw)
-        try:
-            conn.putrequest("GET", path)
-
-            host_hdr = p.hostname if p.port in (None, 80, 443) else f"{p.hostname}:{p.port}"
-            conn.putheader("Host", host_hdr)
-
-            if extra_headers:
-                for k, v in extra_headers.items():
-                    conn.putheader(k, v)
-            conn.endheaders()
-            return conn.getresponse()
-        except (ssl.SSLError, socket.timeout, OSError):
-            return None
-        finally:
-            conn.close()
-
-    def _get_bad_request_response(self, base_url: str) -> HTTPResponse | None:
-        """
-        Attempt to induce a 400 Bad Request response by sending malformed requests.
-        Same implementation as in WSRPO module.
-
-        Args:
-            base_url: The base URL to target.
-
-        Returns:
-            HTTPResponse object with status 400 if successful, else None.
-        """
-        base_url = base_url.rstrip("/")
-
-        r = self._raw_request(base_url, "/%")
-        if r and r.code == 400:
-            return r
-
-        r = self._raw_request(base_url, "/", extra_headers={"Host": "%"})
-        if r and r.code == 400:
-            return r
-
-        r = self._raw_request(base_url, "/",
-                            extra_headers={"BadHeaderWithoutColon": ""})
-        if r and r.code == 400:
-            return r
-
-        return None
-
     def _get_response_headers(self, response) -> Dict[str, str]:
         """
         Extract and normalize headers from an HTTP response object.
@@ -184,9 +117,9 @@ class HDRVAL:
         """
         if not response:
             return {}
-            
+
         headers = {}
-        
+
         if hasattr(response, 'headers'):
             if hasattr(response.headers, 'items'):
                 headers = {k.lower(): v for k, v in response.headers.items()}
@@ -198,12 +131,12 @@ class HDRVAL:
         elif hasattr(response, 'getheaders'):
             for header_name, header_value in response.getheaders():
                 headers[header_name.lower()] = header_value
-        
+
         if hasattr(response, 'msg') and hasattr(response.msg, 'keys'):
             for key in response.msg.keys():
                 if key.lower() not in headers:
                     headers[key.lower()] = response.msg[key]
-                
+
         return headers
 
     def _combine_headers(self, headers_200: Dict[str, str], headers_400: Dict[str, str]) -> Dict[str, Dict[str, Any]]:
@@ -219,13 +152,13 @@ class HDRVAL:
         """
         combined = {}
         server_headers = [header.lower() for header in self.target_headers]
-        
+
         for header_name, header_value in headers_200.items():
             combined[header_name] = {
                 'value': header_value,
                 'sources': ['200']
             }
-        
+
         for header_name, header_value in headers_400.items():
             if header_name in combined:
                 if combined[header_name]['value'] != header_value:
@@ -241,7 +174,7 @@ class HDRVAL:
                     'value': header_value,
                     'sources': ['400']
                 }
-        
+
         return combined
 
     def _get_header_value(self, headers: Dict[str, Dict[str, Any]], header_name: str) -> Optional[Dict[str, Any]]:
@@ -269,7 +202,7 @@ class HDRVAL:
             A list of dictionaries containing 'name' and 'version' of detected technologies.
         """
         technologies = []
-        
+
         if header_name.lower() == "server":
             technologies.extend(self._parse_server_header(header_value))
         elif header_name.lower() in ["x-powered-by", "x-generator"]:
@@ -282,7 +215,7 @@ class HDRVAL:
     def _parse_server_header(self, header_value: str) -> List[Dict[str, Optional[str]]]:
         """
         Parse Server header which can contain multiple technologies.
-        
+
         Examples:
         - "Apache/2.4.54 (Debian) PHP/5.6.40-0+deb8u9 OpenSSL/1.1.1n"
         - "nginx/1.18.0"
@@ -302,7 +235,7 @@ class HDRVAL:
             part = part.strip()
             if not part:
                 continue
-        
+
             os_match = re.search(r'\(([^)]+)\)', part)
             if os_match:
                 os_content = os_match.group(1).strip()
@@ -318,7 +251,7 @@ class HDRVAL:
                         else:
                             if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*$', main_part):
                                 technologies.append({'name': main_part, 'version': None})
-                    
+
                     # Then add the OS
                     technologies.append({'name': os_content, 'version': None})
             else:
@@ -337,7 +270,7 @@ class HDRVAL:
     def _parse_powered_by_header(self, header_value: str) -> List[Dict[str, Optional[str]]]:
         """
         Parse X-Powered-By or X-Generator headers.
-        
+
         Examples:
         - "PHP/8.3.8"
         - "Nette Framework 3"
@@ -353,19 +286,19 @@ class HDRVAL:
             List of technology dictionaries.
         """
         technologies = []
-        
+
         cleaned_value = re.sub(r'\(.*?\)', '', header_value).strip()
-        
+
         parts = re.split(r'[,;]', cleaned_value)
-        
+
         for part in parts:
             part = part.strip()
             if not part:
                 continue
-                
+
             if part.startswith('http://') or part.startswith('https://') or part.startswith('www.'):
                 continue
-                
+
             # Look for name/version pattern (e.g., "PHP/8.3.8")
             version_match = re.match(r'^([^/\s]+)/([^/\s]+)', part)
             if version_match:
@@ -383,7 +316,7 @@ class HDRVAL:
                     # Just the technology name (e.g., "ASP.NET", "Express", "IS VUT")
                     if re.match(r'^[A-Za-z][A-Za-z0-9\-_\s\.]*$', part):
                         technologies.append({'name': part, 'version': None})
-        
+
         return technologies
 
     def _parse_generic_header(self, header_value: str) -> List[Dict[str, Optional[str]]]:
@@ -397,7 +330,7 @@ class HDRVAL:
             List of technology dictionaries.
         """
         technologies = []
-        
+
         version_match = re.match(r'^([^/]+)/([^/\s]+)', header_value)
         if version_match:
             name = version_match.group(1)
@@ -405,7 +338,7 @@ class HDRVAL:
             technologies.append({'name': name, 'version': version})
         else:
             technologies.append({'name': header_value, 'version': None})
-        
+
         return technologies
 
     def _classify_technology(self, technology: Dict[str, Optional[str]], full_header: str,
@@ -422,13 +355,13 @@ class HDRVAL:
             Classified technology dictionary or None if not found in definitions.
         """
         tech_name = technology['name'].lower()
-        
+
         definitions = self.definitions.get('definitions', self.definitions)
         if isinstance(definitions, list):
             definition_list = definitions
         else:
             definition_list = [v for k, v in definitions.items() if k != 'headers']
-        
+
         for definition in definition_list:
             if isinstance(definition, dict) and 'content' in definition:
                 if definition['content'].lower() == tech_name:
@@ -439,7 +372,7 @@ class HDRVAL:
                         'version': technology['version'],
                         'description': f"{header_name}: {full_header}"
                     }
-        
+
         return None
 
     def _add_software_node(self, tech: Dict[str, Any], is_classified: bool) -> None:
@@ -464,9 +397,9 @@ class HDRVAL:
         sw_type = None
         if is_classified and tech.get('category') != 'unknown':
             sw_type = category_mapping.get(tech['category'])
-        
+
         version = tech.get('version') if tech.get('version') else None
-        
+
         if is_classified:
             description = tech.get('description')
         else:
@@ -494,7 +427,7 @@ class HDRVAL:
 
         self.ptjsonlib.add_node(node)
 
-    def _report(self, found_technologies: List[Dict[str, Any]], unclassified_technologies: List[Dict[str, Any]], 
+    def _report(self, found_technologies: List[Dict[str, Any]], unclassified_technologies: List[Dict[str, Any]],
                headers_found: Dict[str, str], header_sources: Dict[str, List[str]]) -> None:
         """
         Output the results of the header analysis and update the JSON data model.
@@ -510,13 +443,13 @@ class HDRVAL:
             return
 
         technologies_by_header = {}
-        
+
         for tech in found_technologies:
             header_name = tech.get('header', 'Server')
             if header_name not in technologies_by_header:
                 technologies_by_header[header_name] = []
             technologies_by_header[header_name].append((tech, True))
-            
+
         for tech in unclassified_technologies:
             header_name = tech.get('header', 'Server')
             if header_name not in technologies_by_header:
@@ -526,7 +459,7 @@ class HDRVAL:
         for header_name in headers_found.keys():
             if header_name in technologies_by_header:
                 ptprint(f"{header_name} header", "INFO", not self.args.json, indent=4)
-                
+
                 for tech, is_classified in technologies_by_header[header_name]:
                     category_text = ""
                     if is_classified and 'category' in tech:
@@ -541,10 +474,10 @@ class HDRVAL:
                         category_text = f" ({category_map.get(tech['category'], tech['category'])})"
                     elif not is_classified:
                         category_text = " (unknown)"
-                    
+
                     version_text = f" {tech['version']}" if tech.get('version') else ""
                     tech_name = tech.get('technology', tech['name'])
-                    
+
                     ptprint(f"{tech_name}{version_text}{category_text}", "VULN", not self.args.json, indent=10)
 
         if found_technologies or unclassified_technologies:

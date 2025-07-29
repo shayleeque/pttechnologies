@@ -134,9 +134,9 @@ class PtTechnologies:
             resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
             # Handle non 200 statuses
             if 300 <= resp_hp.status_code < 400:
-                self.ptjsonlib.end_error(f"Redirect to URL: {self.resp_hp.headers.get('Location', 'unknown')}", self.args.json)
+                self.ptjsonlib.end_error(f"Redirect to URL: {resp_hp.headers.get('Location', 'unknown')}", self.args.json)
             elif resp_hp.status_code != 200:
-                self.ptjsonlib.end_error(f"Webpage returns status code: {self.resp_hp.status_code}", self.args.json)
+                self.ptjsonlib.end_error(f"Webpage returns status code: {resp_hp.status_code}", self.args.json)
 
             # Send request to nonexistent page
             resp_404 = self.http_client.send_request(url=f"{self.args.url}/this-page-does-not-exist-xyz123", method="GET", headers=self.args.headers, allow_redirects=False)

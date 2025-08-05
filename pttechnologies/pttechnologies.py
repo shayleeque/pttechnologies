@@ -35,7 +35,12 @@ from ptlibs.http.http_client import HttpClient
 
 from helpers._thread_local_stdout import ThreadLocalStdout
 from helpers.stored_responses import StoredResponses
+from helpers.predict import Predict
+from helpers.summary import Summary
 from helpers.helpers import Helpers
+
+from helpers.result_storage import storage
+
 from _version import __version__
 
 import requests
@@ -58,6 +63,9 @@ class PtTechnologies:
         """Main method"""
         tests = self.args.tests or _get_all_available_modules()
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
+
+        Predict(args=self.args, ptjsonlib=self.ptjsonlib).run()
+        Summary(args=self.args, ptjsonlib=self.ptjsonlib).run()
 
         self.ptjsonlib.set_status("finished")
         ptprint(self.ptjsonlib.get_result_json(), "", self.args.json)

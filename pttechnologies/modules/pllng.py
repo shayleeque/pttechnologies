@@ -23,6 +23,7 @@ import json
 import os
 from urllib.parse import urlparse, urljoin
 
+from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 from ptlibs import ptjsonlib, ptmisclib, ptnethelper
 from ptlibs.ptprinthelper import ptprint

@@ -18,7 +18,9 @@ Usage:
 import re
 import uuid
 import ssl
+from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
+
 
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlparse
@@ -167,7 +169,7 @@ class HDRVAL:
         for source_name, headers in source_headers.items():
             if not headers:
                 continue
-            
+
             for header_name, header_value in headers.items():
                 header_lower = header_name.lower()
                 if header_lower not in combined:
@@ -183,7 +185,7 @@ class HDRVAL:
 
                     if source_name not in existing_data['sources']:
                         existing_data['sources'].append(source_name)
-                    
+
                     if header_value not in existing_data['unique_values']:
                         existing_data['unique_values'].append(header_value)
 

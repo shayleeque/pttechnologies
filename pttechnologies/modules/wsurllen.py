@@ -19,6 +19,7 @@ from ptlibs import ptjsonlib
 from ptlibs.ptprinthelper import ptprint
 
 from helpers.stored_responses import StoredResponses
+from helpers.result_storage import storage
 
 import json
 import os

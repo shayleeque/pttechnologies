@@ -14,7 +14,7 @@ Usage:
 """
 
 from typing import List, Tuple
-
+from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
 from ptlibs.http.raw_http_client import RawHttpResponse

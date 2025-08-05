@@ -14,7 +14,7 @@ Contains:
 Usage:
     WSHT(args, ptjsonlib, helpers, http_client, responses).run()
 """
-
+from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
 from ptlibs import ptjsonlib, ptmisclib, ptnethelper

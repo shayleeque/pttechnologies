@@ -19,6 +19,7 @@ import os
 import re
 from urllib.parse import urlparse, urlunparse, urljoin
 
+from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
 from ptlibs import ptjsonlib

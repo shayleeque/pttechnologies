@@ -22,6 +22,7 @@ class ResultStorage:
         get_all_records(): Retrieve all stored results safely.
         get_vulnerabilities(): Get unique vulnerability identifiers.
         get_technologies(): Get unique technology+version combinations.
+        get_technologies_with_version(): Get unique combinations of technology and version.
         get_data_for_technology(...): Return aggregated metadata for a given technology,
                                       including version info, module usage, and mapped attributes.
     """

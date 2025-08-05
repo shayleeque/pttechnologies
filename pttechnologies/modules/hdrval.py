@@ -21,9 +21,7 @@ import ssl
 from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
-
 from typing import List, Dict, Any, Optional
-from urllib.parse import urlparse
 from ptlibs.ptprinthelper import ptprint
 
 __TESTLABEL__ = "Test for the content of HTTP response headers"
@@ -54,9 +52,10 @@ class HDRVAL:
         """
         Execute the HDRVAL test logic.
 
-        Analyzes the headers from the HTTP response (200) and raw HTTP response (400),
-        combines them, parses their content to extract
-        technologies, classifies known ones based on definitions, and reports the results.
+        Analyzes headers from multiple HTTP responses (200, 400, favicon, long),
+        combines them with source tracking, parses their content to extract
+        technologies, classifies known ones based on definitions, and reports the results
+        with specific source information for each technology.
         """
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
@@ -77,13 +76,11 @@ class HDRVAL:
             return
 
         headers_found = {}
-        header_sources = {}
 
         for header_name in self.target_headers:
             header_value = self._get_header_value(combined_headers, header_name)
             if header_value:
                 headers_found[header_name] = header_value['value']
-                header_sources[header_name] = header_value['sources']
 
         if not headers_found:
             ptprint("No relevant headers found", "INFO", not self.args.json, indent=4)
@@ -92,26 +89,32 @@ class HDRVAL:
         found_technologies = []
         unclassified_technologies = []
 
-        for header_name, header_value in headers_found.items():
-            technologies = self._parse_header_value(header_value, header_name)
-            sources = header_sources[header_name]
+        for header_name in self.target_headers:
+            header_data = combined_headers.get(header_name.lower())
+            if not header_data:
+                continue
 
-            for tech in technologies:
-                classified = self._classify_technology(tech, header_value, header_name)
+            for tech_data in header_data.get('technologies', []):
+                tech = {
+                    'name': tech_data['name'],
+                    'version': tech_data['version']
+                }
+                classified = self._classify_technology(tech, headers_found[header_name], header_name)
                 if classified:
                     classified['header'] = header_name
-                    classified['sources'] = sources
+                    classified['tech_sources'] = tech_data['sources']
+                    classified['tech_values'] = tech_data['source_values']
                     found_technologies.append(classified)
                 else:
                     unclassified_technologies.append({
                         'name': tech['name'],
                         'version': tech['version'],
                         'header': header_name,
-                        'full_header': header_value,
-                        'sources': sources
+                        'tech_sources': tech_data['sources'],
+                        'tech_values': tech_data['source_values']
                     })
 
-        self._report(found_technologies, unclassified_technologies, headers_found, header_sources)
+        self._report(found_technologies, unclassified_technologies, headers_found, combined_headers)
 
     def _get_response_headers(self, response) -> Dict[str, str]:
         """
@@ -162,6 +165,7 @@ class HDRVAL:
             - 'sources': List of sources where this header was found
             - 'values_by_source': Mapping of source to specific value
             - 'unique_values': List of unique values found across all sources
+            - 'technologies': List of parsed technologies with their sources and extracted values
         """
         combined = {}
         tech_detection_headers = [header.lower() for header in self.target_headers]
@@ -191,8 +195,79 @@ class HDRVAL:
 
                         if header_lower in tech_detection_headers:
                             existing_data['value'] = ' | '.join(existing_data['unique_values'])
-
+                            
+        for header_name, header_data in combined.items():
+            if header_name in [h.lower() for h in self.target_headers]:
+                technology_sources = {}  # tech_key -> list of sources
+                
+                # Parse technologies from each source value
+                for source, value in header_data['values_by_source'].items():
+                    technologies = self._parse_header_value(value, header_name)
+                    
+                    for tech in technologies:
+                        tech_key = f"{tech['name']}:{tech.get('version', '')}"
+                        if tech_key not in technology_sources:
+                            technology_sources[tech_key] = {
+                                'name': tech['name'],
+                                'version': tech.get('version'),
+                                'sources': [],
+                                'values': {}
+                            }
+                        
+                        if source not in technology_sources[tech_key]['sources']:
+                            technology_sources[tech_key]['sources'].append(source)
+                        
+                        # Store the extracted value for this tech from this source
+                        extracted = self._extract_technology_from_header(
+                            tech['name'].lower(), tech.get('version'), value
+                        )
+                        technology_sources[tech_key]['values'][source] = extracted
+                
+                # Convert to list format
+                header_data['technologies'] = [
+                    {
+                        'name': data['name'],
+                        'version': data['version'],
+                        'sources': data['sources'],
+                        'source_values': data['values']
+                    }
+                    for data in technology_sources.values()
+                ]
         return combined
+
+    def _extract_technology_from_header(self, tech_name: str, version: Optional[str], header_value: str) -> str:
+        """
+        Extract the specific part of header value that contains the technology.
+        
+        Args:
+            tech_name: Name of the technology (lowercase)
+            version: Version of the technology
+            header_value: Full header value
+            
+        Returns:
+            Extracted technology string from header
+        """
+        # Try to find name/version pattern first
+        if version:
+            pattern = f"{re.escape(tech_name)}/{re.escape(version)}"
+            match = re.search(pattern, header_value, re.IGNORECASE)
+            if match:
+                return match.group(0)
+        
+        # Look for technology name with any version
+        pattern = f"{re.escape(tech_name)}(?:/[\\w\\.-]+)?"
+        match = re.search(pattern, header_value, re.IGNORECASE)
+        if match:
+            return match.group(0)
+        
+        # Fallback - find the technology name in the string
+        parts = header_value.split()
+        for part in parts:
+            if tech_name.lower() in part.lower():
+                return part
+        
+        # Last fallback
+        return f"{tech_name}/{version}" if version else tech_name
 
     def _get_header_value(self, headers: Dict[str, Dict[str, Any]], header_name: str) -> Optional[Dict[str, Any]]:
         """
@@ -468,10 +543,13 @@ class HDRVAL:
 
     def _add_software_node(self, tech: Dict[str, Any], is_classified: bool) -> None:
         """
-        Add a software node to the ptjsonlib model.
+         Add a software node to the ptjsonlib model with specific source information.
+
+        Creates descriptions showing exact header values and sources where each
+        technology was found (e.g., "Server: Apache [200 HP, 200 FAVICON]").
 
         Args:
-            tech: Parsed or classified technology.
+            tech: Parsed or classified technology with tech_sources and tech_values.
             is_classified: Whether the technology was matched against known definitions.
         """
         node_key = str(uuid.uuid4())
@@ -490,15 +568,30 @@ class HDRVAL:
             sw_type = category_mapping.get(tech['category'])
 
         version = tech.get('version') if tech.get('version') else None
+        header_name = tech.get('header', 'Unknown')
+
+        tech_values = tech.get('tech_values', {})
+        tech_sources = tech.get('tech_sources', [])
+
+
+        if tech_values and tech_sources:
+            # Use the first source's value
+            first_source = tech_sources[0]
+            extracted_value = tech_values.get(first_source, tech['name'])
+            source_descriptions = [self._get_source_description(source) for source in tech_sources]
+            sources_text = ', '.join(source_descriptions)
+            description = f"{header_name}: {extracted_value} [{sources_text}]"
+        else:
+            # Fallback
+            if is_classified:
+                description = tech.get('description', f"{header_name}: {tech['name']}")
+            else:
+                full_header = tech.get('full_header', tech['name'])
+                description = f"{header_name}: {full_header}"
 
         if is_classified:
-            description = tech.get('description')
-            # Use the proper technology name from classification
             name = tech.get('technology', tech['name'])
         else:
-            header_name = tech.get('header', 'Unknown')
-            full_header = tech.get('full_header', tech['name'])
-            description = f"{header_name}: {full_header}"
             name = tech['name']
 
         properties = {}
@@ -521,16 +614,29 @@ class HDRVAL:
 
         self.ptjsonlib.add_node(node)
 
+    def _get_source_description(self, source: str) -> str:
+        """Map source names to their descriptive labels with status codes."""
+        source_map = {
+            '200': '200 HP',
+            '400': '400 %', 
+            'favicon': '200 FAVICON',
+            'long': '400 LONGURL'
+        }
+        return source_map.get(source, source.upper())
+
     def _report(self, found_technologies: List[Dict[str, Any]], unclassified_technologies: List[Dict[str, Any]],
-               headers_found: Dict[str, str], header_sources: Dict[str, List[str]]) -> None:
+               headers_found: Dict[str, str], combined_headers: Dict[str, Dict[str, Any]]) -> None:
         """
         Output the results of the header analysis and update the JSON data model.
+
+        Shows grouped header values when using verbose mode (-vv), displaying each
+        unique header value with all sources where it was found.
 
         Args:
             found_technologies: List of technologies successfully classified.
             unclassified_technologies: List of technologies that were not matched.
             headers_found: Dictionary of headers that were present in the response.
-            header_sources: Dictionary mapping header names to list of response sources.
+            combined_headers: Combined headers data with source and technology information.
         """
         if not found_technologies and not unclassified_technologies:
             ptprint("No technologies identified in headers", "INFO", not self.args.json, indent=4)
@@ -555,8 +661,22 @@ class HDRVAL:
                 ptprint(f"{header_name} header", "INFO", not self.args.json, indent=4)
 
                 if self.args.verbose:
-                    header_value = headers_found.get(header_name, '')
-                    ptprint(f"{header_name}: {header_value}", "ADDITIONS", not self.args.json, indent=8, colortext=True)
+                    # Show each header value separately with sources (-vv)
+                    header_data = combined_headers.get(header_name.lower(), {})
+                    values_by_source = header_data.get('values_by_source', {})
+                    
+                    # Group identical values and combine their sources
+                    value_to_sources = {}
+                    for source, value in values_by_source.items():
+                        if value not in value_to_sources:
+                            value_to_sources[value] = []
+                        value_to_sources[value].append(source)
+                    
+                    # Display each unique value with all its sources
+                    for value, sources in value_to_sources.items():
+                        source_descriptions = [self._get_source_description(source) for source in sources]
+                        sources_text = ', '.join(source_descriptions)
+                        ptprint(f"{header_name}: {value} [{sources_text}]", "ADDITIONS", not self.args.json, indent=8, colortext=True)
 
                 for tech, is_classified in technologies_by_header[header_name]:
                     category_text = ""

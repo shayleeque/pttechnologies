@@ -48,15 +48,6 @@ class HDRVAL:
             "Server", "X-Powered-By", "X-Generator", "X-AspNet-Version", "X-AspNetMvc-Version"
         ])
 
-        self.category_mapping = {
-            'prgLanguage': 'Interpret',
-            'webServer': 'WebServer', 
-            'webServerModule': 'Plugin',
-            'framework': 'BackendFramework',
-            'cms': 'WebApp',
-            'operatingSystem': 'Os'
-        }
-
     def run(self) -> None:
         """
         Execute the HDRVAL test logic.
@@ -560,7 +551,7 @@ class HDRVAL:
         """
         
         if is_classified and tech.get('category') != 'unknown':
-            tech_type = self.category_mapping.get(tech['category'])
+            tech_type = tech['category']
         else:
             tech_type = None
         
@@ -655,7 +646,7 @@ class HDRVAL:
                 for tech, is_classified in technologies_by_header[header_name]:
                     category_text = ""
                     if is_classified and 'category' in tech:
-                        category_text = f" ({self.category_mapping.get(tech['category'], tech['category'])})"
+                        category_text = f" ({tech['category']})"
                     elif not is_classified:
                         category_text = " (unknown)"
 

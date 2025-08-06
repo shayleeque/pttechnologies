@@ -10,307 +10,307 @@
     ],
     "definitions": [
       {
-        "category": "prgLanguage",
+        "category": "Interpret",
         "technology": "PHP",
         "content": "php"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Apache",
         "content": "apache"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Nginx",
         "content": "nginx"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Microsoft-IIS",
         "content": "microsoft-iis"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Microsoft-HTTPAPI",
         "content": "microsoft-httpapi"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "LiteSpeed",
         "content": "litespeed"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Caddy",
         "content": "caddy"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Cloudflare",
         "content": "cloudflare"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "CloudFront",
         "content": "CloudFront"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Nette Framework",
         "content": "nette framework"
       },
       {
-        "category": "cms",
+        "category": "WebApp",
         "technology": "Drupal",
         "content": "drupal"
       },
       {
-        "category": "cms",
+        "category": "WebApp",
         "technology": "WordPress",
         "content": "wordpress"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Laravel",
         "content": "laravel"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Symfony",
         "content": "symfony"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Django",
         "content": "django"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Flask",
         "content": "flask"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Express",
         "content": "express"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "ASP.NET Framework",
         "content" : "asp.net framework"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "ASP.NET MVC",
         "content" : "asp.net mvc"
       },
       {
-        "category": "prgLanguage",
+        "category": "Interpret",
         "technology": "Python",
         "content": "python"
       },
       {
-        "category": "prgLanguage",
+        "category": "Interpret",
         "technology": "Node.js",
         "content": "node.js"
       },
       {
-        "category": "prgLanguage",
+        "category": "Interpret",
         "technology": "ASP.NET",
         "content": "asp.net"
       },
       {
-        "category": "prgLanguage",
+        "category": "Interpret",
         "technology": "Ruby",
         "content": "ruby"
       },
       {
-        "category": "prgLanguage",
+        "category": "Interpret",
         "technology": "Java",
         "content": "java"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Tomcat",
         "content": "tomcat"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Jetty",
         "content": "jetty"
       },
       {
-        "category": "webServer",
+        "category": "WebServer",
         "technology": "Undertow",
         "content": "undertow"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Spring Boot",
         "content": "spring boot"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Rails",
         "content": "rails"
       },
       {
-        "category": "cms",
+        "category": "WebApp",
         "technology": "Joomla",
         "content": "joomla"
       },
       {
-        "category": "cms",
+        "category": "WebApp",
         "technology": "Magento",
         "content": "magento"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "CodeIgniter",
         "content": "codeigniter"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Zend Framework",
         "content": "zend"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "CakePHP",
         "content": "cakephp"
       },
       {
-        "category": "framework",
+        "category": "BackendFramework",
         "technology": "Yii",
         "content": "yii"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Ubuntu Linux",
         "content": "ubuntu"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Debian Linux",
         "content": "debian"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Windows",
         "content": "win64"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Windows",
         "content": "win32"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "CentOS Linux",
         "content": "centos"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Red Hat Linux",
         "content": "red hat"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Raspbian Linux",
         "content": "raspbian"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Alpine Linux",
         "content": "alpine"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Fedora Linux",
         "content": "fedora"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Arch Linux",
         "content": "arch linux"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "FreeBSD",
         "content": "freebsd"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "SUSE Linux",
         "content": "suse"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Gentoo Linux",
         "content": "gentoo"
       },
       {
-        "category": "operatingSystem",
+        "category": "Os",
         "technology": "Unix",
         "content": "unix"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_ssl",
         "content": "mod_ssl"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_fcgid",
         "content": "mod_fcgid"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_php",
         "content": "mod_php"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_perl",
         "content": "mod_perl"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_wsgi",
         "content": "mod_wsgi"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_python",
         "content": "mod_python"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_jk",
         "content": "mod_jk"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_proxy",
         "content": "mod_proxy"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_wsgi-express",
         "content": "mod_wsgi-express"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_lua",
         "content": "mod_lua"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_auth_passthrough",
         "content": "mod_auth_passthrough"
       },
       {
-        "category": "webServerModule",
+        "category": "Plugin",
         "technology": "mod_bwlimited",
         "content": "mod_bwlimited"
       }

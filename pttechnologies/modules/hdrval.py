@@ -560,7 +560,7 @@ class HDRVAL:
         """
         
         if is_classified and tech.get('category') != 'unknown':
-            tech_type = self.category_mapping.get(tech['category'], 'WebApp')
+            tech_type = self.category_mapping.get(tech['category'])
         else:
             tech_type = None
         

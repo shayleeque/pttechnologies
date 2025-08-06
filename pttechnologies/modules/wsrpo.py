@@ -155,9 +155,7 @@ class WSRPO:
             tech: The identified technology string.
         """
         if tech:
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-WSRPO")
-            key = f"webServer{tech}"
-            self.ptjsonlib.add_properties({"webServer": key})
+            storage.add_to_storage(technology=tech, technology_type="WebServer", vulnerability="PTV-WEB-INFO-WSRPO")            
             ptprint(f"Identified WS: {tech}", "VULN", not self.args.json, indent=4)
 
 def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):

@@ -140,8 +140,7 @@ class PLLNG:
         if result:
             language = result["technology"]
             ext = result["extension"].capitalize()
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-LNGEX")
-            self.ptjsonlib.add_properties({"webProgrammingLanguage": f"webProgrammingLanguage{ext}"})
+            storage.add_to_storage(technology=language, technology_type="Interpret", vulnerability="PTV-WEB-INFO-LNGEX")
             ptprint(f"Identified language: {language}", "VULN", not self.args.json, indent=4)
         else:
             ptprint(f"It was not possible to identify the programming language", "INFO", not self.args.json, indent=4)

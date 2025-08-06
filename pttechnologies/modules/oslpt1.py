@@ -47,12 +47,10 @@ class OSLPT1:
         response2 = self.http_client.send_request(url=self.args.url + "/LPT1", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
 
         if response1.status_code != response2.status_code:
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSLNK")
-            self.ptjsonlib.add_properties({"os": "osWindows"})
+            storage.add_to_storage(technology="Windows", technology_type="Os", vulnerability="PTV-WEB-INFO-OSLNK")
             ptprint(f"Identified OS: Windows", "VULN", not self.args.json, indent=4)
         else:
-            self.ptjsonlib.add_properties({"os": "osUnix"})
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSLNK")
+            storage.add_to_storage(technology="Linux", technology_type="Os", vulnerability="PTV-WEB-INFO-OSLNK")
             ptprint(f"Identified OS: Unix / Linux", "VULN", not self.args.json, indent=4)
 
 def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):

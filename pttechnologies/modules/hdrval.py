@@ -541,78 +541,43 @@ class HDRVAL:
 
         return None
 
-    def _add_software_node(self, tech: Dict[str, Any], is_classified: bool) -> None:
+    def _store_technology(self, tech: Dict[str, Any], is_classified: bool) -> None:
         """
-         Add a software node to the ptjsonlib model with specific source information.
-
-        Creates descriptions showing exact header values and sources where each
-        technology was found (e.g., "Server: Apache [200 HP, 200 FAVICON]").
-
+        Store detected technology in the storage system.
+        
         Args:
-            tech: Parsed or classified technology with tech_sources and tech_values.
-            is_classified: Whether the technology was matched against known definitions.
+            tech: Parsed or classified technology data
+            is_classified: Whether the technology was matched against known definitions
         """
-        node_key = str(uuid.uuid4())
-
-        category_mapping = {
-            'prgLanguage': 'swPrgLanguage',
-            'webServer': 'swWebServer',
-            'webServerModule': 'swWebServerModule',
-            'framework': 'swFramework',
-            'cms': 'swCms',
-            'operatingSystem': 'swOperatingSystem'
-        }
-
-        sw_type = None
+        
         if is_classified and tech.get('category') != 'unknown':
-            sw_type = category_mapping.get(tech['category'])
-
-        version = tech.get('version') if tech.get('version') else None
+            tech_type = tech['category']
+        else:
+            tech_type = None
+        
+        tech_name = tech.get('technology', tech['name'])
+        version = tech.get('version')
+        
         header_name = tech.get('header', 'Unknown')
-
         tech_values = tech.get('tech_values', {})
         tech_sources = tech.get('tech_sources', [])
-
-
+        
         if tech_values and tech_sources:
-            # Use the first source's value
             first_source = tech_sources[0]
-            extracted_value = tech_values.get(first_source, tech['name'])
+            extracted_value = tech_values.get(first_source, tech_name)
             source_descriptions = [self._get_source_description(source) for source in tech_sources]
             sources_text = ', '.join(source_descriptions)
             description = f"{header_name}: {extracted_value} [{sources_text}]"
         else:
-            # Fallback
-            if is_classified:
-                description = tech.get('description', f"{header_name}: {tech['name']}")
-            else:
-                full_header = tech.get('full_header', tech['name'])
-                description = f"{header_name}: {full_header}"
-
-        if is_classified:
-            name = tech.get('technology', tech['name'])
-        else:
-            name = tech['name']
-
-        properties = {}
-
-        if sw_type:
-            properties["type"] = sw_type
-        properties["name"] = name
-        if version:
-            properties["version"] = version
-        properties["description"] = description
-
-        node = {
-            "type": "sw",
-            "key": node_key,
-            "parent": None,
-            "parentType": None,
-            "properties": properties,
-            "vulnerabilities": []
-        }
-
-        self.ptjsonlib.add_node(node)
+            description = f"{header_name}: {tech_name}"
+        
+        storage.add_to_storage(
+            technology=tech_name,
+            version=version,
+            technology_type=tech_type,
+            vulnerability="PTV-WEB-INFO-SRVHDR",
+            description=description
+        )
 
     def _get_source_description(self, source: str) -> str:
         """Map source names to their descriptive labels with status codes."""
@@ -681,15 +646,7 @@ class HDRVAL:
                 for tech, is_classified in technologies_by_header[header_name]:
                     category_text = ""
                     if is_classified and 'category' in tech:
-                        category_map = {
-                            'prgLanguage': 'Programming language',
-                            'webServer': 'Web server',
-                            'webServerModule': 'Web server module',
-                            'framework': 'Framework',
-                            'cms': 'CMS',
-                            'operatingSystem': 'Operating system'
-                        }
-                        category_text = f" ({category_map.get(tech['category'], tech['category'])})"
+                        category_text = f" ({tech['category']})"
                     elif not is_classified:
                         category_text = " (unknown)"
 
@@ -698,14 +655,11 @@ class HDRVAL:
 
                     ptprint(f"{tech_name}{version_text}{category_text}", "VULN", not self.args.json, indent=8)
 
-        if found_technologies or unclassified_technologies:
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSSEN")
-
         for tech, is_classified in [
             *( (t, True) for t in found_technologies ),
             *( (t, False) for t in unclassified_technologies )
         ]:
-            self._add_software_node(tech, is_classified)
+            self._store_technology(tech, is_classified)
 
 
 def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):

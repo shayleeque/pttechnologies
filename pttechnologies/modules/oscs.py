@@ -167,13 +167,12 @@ class OSCS:
 
         This method also records the vulnerability code and OS property in the JSON.
         """
-        self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-OSSEN")
 
         if r1.status_code == r2.status_code and ct1 == ct2:
-            self.ptjsonlib.add_properties({"os": "osWindows"})
+            storage.add_to_storage(technology="Windows", technology_type="Os", vulnerability="PTV-WEB-INFO-OSSEN")
             ptprint("Identified OS: Windows", "VULN", not self.args.json, indent = 4)
         else:
-            self.ptjsonlib.add_properties({"os": "osUnix"})
+            storage.add_to_storage(technology="Linux", technology_type="Os", vulnerability="PTV-WEB-INFO-OSSEN")
             ptprint("Identified OS: Unix / Linux", "VULN", not self.args.json, indent = 4)
 
 

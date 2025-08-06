@@ -1,37 +1,37 @@
 [
     {
       "extension": "php",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "PHP"
     },
     {
       "extension": "asp",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "ASP"
     },
     {
       "extension": "aspx",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "ASP.NET"
     },
     {
       "extension": "jsp",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "JSP"
     },
     {
       "extension": "jspx",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "JSPX"
     },
     {
       "extension": "py",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "Python"
     },
     {
       "extension": "html",
-      "category": "prgLanguage",
+      "category": "Interpret",
       "technology": "HTML"
     }
 ]

@@ -61,8 +61,7 @@ class WSHT:
         response2 = self.http_client.send_request(url=self.args.url + "/.ht", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
 
         if response1.status_code != response2.status_code:
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-WSHT")
-            self.ptjsonlib.add_properties({"webServer": "webServerApache"})
+            storage.add_to_storage(technology="Apache", technology_type="WebServer", vulnerability="PTV-WEB-INFO-WSHT")
             ptprint(f"Identified WS: Apache", "VULN", not self.args.json, indent=4)
         else:
             ptprint(f"It is not possible to identify the web server, but it does not seem to be Apache", "INFO", not self.args.json, indent=4)

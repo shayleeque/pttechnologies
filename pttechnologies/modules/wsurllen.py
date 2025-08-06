@@ -83,8 +83,7 @@ class WSURLLEN:
         server = self._identify_server(statuses)
         if server:
             ptprint(f"Identified WS: {server}", "VULN", not self.args.json, indent=4)
-            self.ptjsonlib.add_vulnerability("PTV-WEB-INFO-WSURL")
-            self.ptjsonlib.add_properties({"webServer": f"webServer[{server}]"})
+            storage.add_to_storage(technology=server, technology_type="WebServer", vulnerability="PTV-WEB-INFO-WSURL")
         else:
             ptprint("No matching web server identified from URL length behavior", "INFO", not self.args.json, indent=4)
 

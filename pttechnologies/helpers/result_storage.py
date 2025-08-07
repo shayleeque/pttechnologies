@@ -215,6 +215,75 @@ class ResultStorage:
                 "sw_value": sw_value
             }
 
+    def get_properties(self) -> dict[str, dict[str, str]]:
+        """
+        Aggregate and return a dictionary of node types (device, service, web_app) and their associated
+        technology properties based on the first occurrence of each relevant technology_type in storage.
+
+        For each supported technology_type, the method finds the first matching record in storage
+        and constructs a mapping based on the corresponding configuration from TECHNOLOGY_MAPPING.
+
+        Only technology types listed in TECHNOLOGY_MAPPING are considered.
+        Records with other types (e.g., JsLib, Plugin, Theme, TemplateSystem) are skipped automatically.
+
+        Returns:
+            dict: Dictionary structured by node type with swType as key and swPrefix+technology as value.
+
+            Example:
+            {
+                "device": {
+                    "device_os": "deviceOsWindows"
+                },
+                "service": {
+                    "service_sw": "serviceSwApache"
+                },
+                "web_app": {
+                    "web_app": "webAppKentico",
+                    "web_programming_language": "webProgrammingLanguageCsharp",
+                    "web_framework": "webFrameworkAspNet",
+                    "framework_js": "frameworkJsAngular"
+                }
+            }
+        """
+        result: dict[str, dict[str, str]] = {
+            "device": {},
+            "service": {},
+            "web_app": {}
+        }
+
+        seen_categories: set[str] = set()
+
+        # Only process technology types that are defined in TECHNOLOGY_MAPPING
+        supported_categories = {entry["category"] for entry in self.TECHNOLOGY_MAPPING}
+
+        with self._lock:
+            for record in self._storage:
+                tech_type = record.get("technology_type")
+                technology = record.get("technology")
+
+                # Skip if data is incomplete or already processed
+                if not tech_type or not technology or tech_type in seen_categories:
+                    continue
+
+                # Skip unsupported categories (e.g. JsLib, Plugin, etc.)
+                if tech_type not in supported_categories:
+                    continue
+
+                # Find corresponding mapping
+                mapping = next((m for m in self.TECHNOLOGY_MAPPING if m["category"] == tech_type), None)
+                if not mapping:
+                    continue
+
+                node = mapping["nodeTargetType"]            # e.g., web_app, service, device
+                sw_type = mapping["swType"]                 # e.g., web_app, service_sw, etc.
+                sw_prefix = mapping["swPrefix"]             # e.g., webApp, serviceSw, etc.
+
+                result[node][sw_type] = f"{sw_prefix}{technology}"
+                seen_categories.add(tech_type)
+
+        # Remove empty blocks (if no tech was found for a node)
+        return {k: v for k, v in result.items() if v}
+
 
 # Global instance, import this instead of the class
 storage = ResultStorage()

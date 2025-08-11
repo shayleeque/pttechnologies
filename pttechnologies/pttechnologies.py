@@ -64,7 +64,7 @@ class PtTechnologies:
         tests = self.args.tests or _get_all_available_modules()
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
 
-        Predict(args=self.args, ptjsonlib=self.ptjsonlib).run()
+        Predict(args=self.args, ptjsonlib=self.ptjsonlib, helpers=self.helpers).run()
         Summary(args=self.args, ptjsonlib=self.ptjsonlib).run()
 
         self.ptjsonlib.set_status("finished")

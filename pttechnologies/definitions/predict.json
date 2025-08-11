@@ -1,0 +1,259 @@
+[
+    {
+        "when":[
+            {"technology": "IIS"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "description": "ASP.NET (Framework)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "ASP"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows", 
+                "technology_type": "Os",
+                "description": "ASP.NET (Framework)"
+            },
+            {   
+                "technology": "IIS",
+                "technology_type": "Webserver",
+                "description": "ASP.NET (Framework)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "ASP.NET"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows", 
+                "technology_type": "Os",
+                "description": "ASP.NET (Framework)"
+            },
+            {
+                "technology": "IIS",
+                "technology_type": "Webserver",
+                "description": "ASP.NET (Framework)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"description_contains": "X-AspNet-Version"}
+        ],
+        "predict":[
+            {   
+                "technology": "Windows",
+                "technology_type": "Os",
+                "description": "ASP.NET (Framework)"
+            },
+            {
+                "technology": "ASP.NET",
+                "technology_type": "Interpret",
+                "description": "ASP.NET (Framework)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "10.0"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "2016, 2019, 2022",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {   
+        "when":[
+            {"technology": "IIS", "version": "8.5"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "2012 R2",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "8.0"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "2012",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "7.5"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "2008 R2",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "7.0"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "2008",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "6.0"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "2003",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "5.1"}
+        ],
+        "predict":[
+            {   
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "XP Professional",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "IIS", "version": "5.0"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "version": "200",
+                "description": "IIS (Webserver)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/5\\.6\\.40-0\\+deb8u\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Debian",
+                "version": "8",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/7\\.0\\.33-0\\+deb9u\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Debian",
+                "version": "9",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/7\\.3\\.19-1~deb10u\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Debian",
+                "version": "10",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/7\\.4\\.3-4ubuntu2\\.\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Ubuntu",
+                "version": "20.04",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/8\\.1\\.2-1ubuntu2\\.\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Ubuntu",
+                "version": "22.04",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/7\\.2\\.24-0ubuntu0\\.18\\.04\\.\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Ubuntu",
+                "version": "18.04",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    },
+    {
+        "when": [
+          { "description_regex": "PHP/8\\.1\\.1-r\\d+" }
+        ],
+        "predict": [
+            {
+                "technology": "Alpine Linux",
+                "technology_type": "Os",
+                "description": "PHP (Interpret)"
+            }
+        ]
+    }
+]

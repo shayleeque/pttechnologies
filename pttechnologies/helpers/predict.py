@@ -127,7 +127,7 @@ class Predict:
                 'technology': item.get("technology"),
                 'technology_type': item.get("technology_type"),
                 'version': item.get("version"),
-                'probability': item.get("probability"),
+                'probability': item.get("probability", 100),
                 'description': item.get('description')
             }
             predictions.append(prediction)

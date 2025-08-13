@@ -75,7 +75,7 @@ class ResultStorage:
         technology: Optional[str] = None,
         version: Optional[str] = None,
         technology_type: Optional[str] = None,
-        probability: Optional[int] = None,
+        probability: Optional[int] = 100,
         vulnerability: Optional[str] = None,
         description: Optional[str] = None,
         module: Optional[str] = None

@@ -65,10 +65,8 @@ class PtTechnologies:
         self.ptthreads.threads(tests, self.run_single_module, self.args.threads)
 
         Predict(args=self.args, ptjsonlib=self.ptjsonlib, helpers=self.helpers).run()
+        ptprint(" ")
         Summary(args=self.args, ptjsonlib=self.ptjsonlib).run()
-
-        self.ptjsonlib.set_status("finished")
-        ptprint(self.ptjsonlib.get_result_json(), "", self.args.json)
 
     def run_single_module(self, module_name: str) -> None:
         """

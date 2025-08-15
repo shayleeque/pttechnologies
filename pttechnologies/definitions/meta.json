@@ -1,0 +1,149 @@
+[
+  {
+    "meta_name": "generator",
+    "patterns": [
+      {
+        "regex": "WordPress\\.com",
+        "technology": "WordPress.com",
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "WordPress\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "WordPress",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Drupal\\s+(\\d+)(?:\\s+\\(.*?\\))?",
+        "technology": "Drupal",
+        "technology_type": "WebApp", 
+        "version_group": 1
+      },
+      {
+        "regex": "Joomla!?\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Joomla",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Joomla!?(?:\\s*-.*)?",
+        "technology": "Joomla", 
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "nopCommerce",
+        "technology": "nopCommerce",
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "Magento\\s+(?:Commerce\\s+)?(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Magento",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Shopify",
+        "technology": "Shopify",
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "PrestaShop\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "PrestaShop",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "TYPO3\\s+CMS\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "TYPO3",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Blogger",
+        "technology": "Blogger",
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "Ghost\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Ghost",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Hugo\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Hugo",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Jekyll\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Jekyll",
+        "technology_type": "WebApp",
+        "version_group": 1
+      },
+      {
+        "regex": "Gatsby\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Gatsby",
+        "technology_type": "FrontendFramework",
+        "version_group": 1
+      },
+      {
+        "regex": "Next\\.js\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Next.js",
+        "technology_type": "FrontendFramework",
+        "version_group": 1
+      },
+      {
+        "regex": "Nuxt\\.js\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "technology": "Nuxt.js",
+        "technology_type": "FrontendFramework",
+        "version_group": 1
+      }
+    ]
+  },
+  {
+    "meta_name": "application-name",
+    "patterns": [
+      {
+        "regex": "React\\s+App",
+        "technology": "React",
+        "technology_type": "FrontendFramework"
+      },
+      {
+        "regex": "Vue\\s*App",
+        "technology": "Vue.js",
+        "technology_type": "FrontendFramework"
+      },
+      {
+        "regex": "Angular\\s*App?",
+        "technology": "Angular",
+        "technology_type": "FrontendFramework"
+      },
+      {
+        "regex": "Svelte\\s*App",
+        "technology": "Svelte",
+        "technology_type": "FrontendFramework"
+      }
+    ]
+  },
+  {
+    "meta_name": "author", 
+    "patterns": [
+      {
+        "regex": "Joomla!?\\s+Project",
+        "technology": "Joomla",
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "Drupal\\s+Association",
+        "technology": "Drupal",
+        "technology_type": "WebApp"
+      },
+      {
+        "regex": "WordPress\\.org",
+        "technology": "WordPress",
+        "technology_type": "WebApp"
+      }
+    ]
+  }
+]

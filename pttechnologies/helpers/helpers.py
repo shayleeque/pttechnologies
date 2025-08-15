@@ -8,6 +8,7 @@ test modules.
 
 import json
 import os
+import socket
 
 from ptlibs.http.http_client import HttpClient
 from ptlibs.http.raw_http_client import RawHttpResponse

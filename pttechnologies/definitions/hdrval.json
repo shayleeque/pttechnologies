@@ -21,6 +21,11 @@
       },
       {
         "category": "WebServer",
+        "technology": "Kestrel",
+        "content": "kestrel"
+      },
+      {
+        "category": "WebServer",
         "technology": "Nginx",
         "content": "nginx"
       },

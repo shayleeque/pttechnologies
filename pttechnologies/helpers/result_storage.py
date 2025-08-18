@@ -187,7 +187,10 @@ class ResultStorage:
                 return {}
 
             if version is None:
-                versions = sorted({r.get("version") for r in filtered})
+                versions_set = {r.get("version") for r in filtered}
+                non_none_versions = [v for v in versions_set if v is not None]
+                sorted_versions = sorted(non_none_versions)
+                versions = ([None] if None in versions_set else []) + sorted_versions
             else:
                 versions = [version]
 

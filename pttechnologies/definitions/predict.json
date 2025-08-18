@@ -1,6 +1,23 @@
 [
     {
         "when":[
+            {"technology": "Kestrel"}
+        ],
+        "predict":[
+            {
+                "technology": "Windows",
+                "technology_type": "Os",
+                "description": "ASP.NET (Framework)"
+            },
+            {
+                "technology": "ASP.NET",
+                "technology_type": "Interpret",
+                "description": "ASP.NET (Framework)"
+            }
+        ]
+    },
+    {
+        "when":[
             {"technology": "IIS"}
         ],
         "predict":[

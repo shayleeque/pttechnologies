@@ -51,7 +51,7 @@
       },
       {
         "category": "WebServer",
-        "technology": "Cloudflare",
+        "technology": "CloudFlare",
         "content": "cloudflare"
       },
       {

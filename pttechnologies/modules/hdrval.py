@@ -317,6 +317,7 @@ class HDRVAL:
         - "nginx/1.18.0"
         - "nginx"
         - "Microsoft-IIS/10.0"
+        - "Google Frontend"
 
         Args:
             header_value: Server header value.
@@ -325,6 +326,21 @@ class HDRVAL:
             List of technology dictionaries.
         """
         technologies = []
+        
+        # Check for known compound names that shouldn't be split
+        compound_servers = ["Google Frontend", "Microsoft-HTTPAPI", "Apache Tomcat"]
+        for compound in compound_servers:
+            if compound.lower() in header_value.lower():
+                # Extract version if present
+                pattern = f"{re.escape(compound)}(?:/([\\w\\.-]+))?"
+                match = re.search(pattern, header_value, re.IGNORECASE)
+                if match:
+                    version = match.group(1) if match.group(1) else None
+                    technologies.append({'name': compound, 'version': version})
+                    # Remove this compound from further processing
+                    header_value = re.sub(pattern, '', header_value, flags=re.IGNORECASE).strip()
+        
+        # Now process the remaining parts normally
         parts = header_value.split()
 
         for part in parts:
@@ -345,7 +361,7 @@ class HDRVAL:
                             version = version_match.group(2)
                             technologies.append({'name': name, 'version': version})
                         else:
-                            if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*$', main_part):
+                            if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*', main_part):
                                 technologies.append({'name': main_part, 'version': None})
 
                     # Then add the OS
@@ -359,7 +375,7 @@ class HDRVAL:
                     technologies.append({'name': name, 'version': version})
                 else:
                     # Just the technology name without version (e.g., "nginx")
-                    if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*$', part):
+                    if re.match(r'^[A-Za-z][A-Za-z0-9\-_]*', part):
                         technologies.append({'name': part, 'version': None})
         return technologies
 
@@ -410,7 +426,7 @@ class HDRVAL:
                     technologies.append({'name': name, 'version': version})
                 else:
                     # Just the technology name (e.g., "ASP.NET", "Express", "IS VUT")
-                    if re.match(r'^[A-Za-z][A-Za-z0-9\-_\s\.]*$', part):
+                    if re.match(r'^[A-Za-z][A-Za-z0-9\-_\s]*$', part):
                         technologies.append({'name': part, 'version': None})
 
         return technologies

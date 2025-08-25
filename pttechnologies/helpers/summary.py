@@ -62,7 +62,7 @@ class Summary:
         Returns:
             None
         """
-        ptprint("Summary: Identified Technologies", "TITLE", True, colortext=True)
+        ptprint("Summary: Identified Technologies", "TITLE", True, colortext=True, newline_above=True)
         
         technologies = storage.get_technologies_with_version()
         

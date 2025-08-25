@@ -16,6 +16,26 @@
       },
       {
         "category": "WebServer",
+        "technology": "Google Frontend", 
+        "content": "google frontend"
+      },
+      {
+        "category": "CDN",
+        "technology": "AkamaiNetStorage",
+        "content": "akamainetstorage"
+      },
+      {
+        "category": "WebServer",
+        "technology": "GWS",
+        "content": "gws"
+      },
+      {
+        "category": "WebServer",
+        "technology": "Google SFFE",
+        "content": "sffe"
+      },
+      {
+        "category": "WebServer",
         "technology": "Apache",
         "content": "apache"
       },

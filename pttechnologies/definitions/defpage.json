@@ -164,42 +164,42 @@
         "name": "CentOS Apache",
         "technology": "Apache",
         "category": "WebServer",
-        "pattern": "CentOS\\s+Apache\\s+HTTP\\s+Server\\s+Test\\s+Page|Testing\\s+123.*CentOS|CentOS.*Apache",
+        "pattern": "<title>.*CentOS\\s+Apache\\s+HTTP\\s+Server\\s+Test\\s+Page.*</title>|<h1>.*Testing\\s+123.*</h1>.*CentOS",
         "flags": "i"
       },
       {
         "name": "Ubuntu Default Apache",
         "technology": "Ubuntu",
         "category": "Os",
-        "pattern": "Ubuntu\\s+Apache2?\\s+Default\\s+Page|Ubuntu\\s+Logo|/icons/ubuntu-logo\\.png",
+        "pattern": "<title>.*Apache2?\\s+Ubuntu\\s+Default\\s+Page.*</title>|<img\\s+src=\"[^\"]*ubuntu-logo\\.png\"[^>]*>.*Apache",
         "flags": "i"
       },
       {
         "name": "Debian Default Apache",
         "technology": "Debian",
         "category": "Os",
-        "pattern": "Debian\\s+Apache2?\\s+Default\\s+Page|Debian\\s+Logo|/icons/openlogo-75\\.png",
+        "pattern": "<title>.*Apache2?\\s+Debian\\s+Default\\s+Page.*</title>|<img\\s+src=\"[^\"]*openlogo-75\\.png\"[^>]*>.*Apache",
         "flags": "i"
       },
       {
         "name": "Red Hat Linux",
         "technology": "Red Hat Enterprise Linux",
         "category": "Os",
-        "pattern": "Red\\s+Hat\\s+Enterprise\\s+Linux|RHEL\\s*\\d*|Fedora\\s+Test\\s+Page",
+        "pattern": "<title>.*Red\\s+Hat\\s+Enterprise\\s+Linux.*Test\\s+Page.*</title>|<title>.*Fedora\\s+Test\\s+Page.*</title>",
         "flags": "i"
       },
       {
         "name": "Oracle Linux",
         "technology": "Oracle Linux",
         "category": "Os",
-        "pattern": "Oracle\\s+Linux\\s*\\d*|Oracle\\s+Corporation.*Linux",
+        "pattern": "<title>.*Oracle\\s+Linux.*Test\\s+Page.*</title>|<h1>\\s*Oracle\\s+Linux.*Apache.*</h1>",
         "flags": "i"
       },
       {
         "name": "Windows Server",
         "technology": "Windows Server",
         "category": "Os",
-        "pattern": "Windows\\s+Server\\s*(\\d{4})?|Microsoft\\s+Windows\\s+Server",
+        "pattern": "<title>.*Internet\\s+Information\\s+Services.*</title>|<h1>.*Internet\\s+Information\\s+Services.*</h1>|Server:\\s*Microsoft-IIS",
         "version_pattern": "Windows\\s+Server\\s+(\\d{4})",
         "flags": "i"
       },
@@ -207,7 +207,7 @@
         "name": "CentOS Default",
         "technology": "CentOS",
         "category": "Os",
-        "pattern": "CentOS\\s+(?:Linux\\s+)?(\\d+)?|Welcome\\s+to\\s+CentOS|CentOS\\s+Linux",
+        "pattern": "<title>.*Welcome\\s+to\\s+CentOS.*</title>|<h1>\\s*Welcome\\s+to\\s+CentOS\\s*</h1>",
         "version_pattern": "CentOS\\s+(\\d+)",
         "flags": "i"
       },
@@ -230,7 +230,7 @@
         "name": "LAMP Stack",
         "technology": "LAMP",
         "category": "Stack",
-        "pattern": "<title>\\s*LAMP\\s*</title>|LAMP\\s+Stack|Linux\\s+Apache\\s+MySQL\\s+PHP",
+        "pattern": "<title>.*LAMP\\s+Test\\s+Page.*</title>|<h1>.*LAMP\\s+Installation.*Success.*</h1>",
         "flags": "i"
       },
       {

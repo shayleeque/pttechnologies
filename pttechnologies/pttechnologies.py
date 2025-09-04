@@ -146,7 +146,12 @@ class PtTechnologies:
             resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=False)
             # Handle non 200 statuses
             if 300 <= resp_hp.status_code < 400:
-                self.ptjsonlib.end_error(f"Redirect to URL: {resp_hp.headers.get('Location', 'unknown')}", self.args.json)
+                if self.args.redirects:
+                    resp_hp = self.http_client.send_request(url=self.args.url, method="GET", headers=self.args.headers, allow_redirects=True)
+                    if resp_hp.status_code != 200:
+                        self.ptjsonlib.end_error(f"Final webpage returns status code: {resp_hp.status_code}", self.args.json)
+                else:
+                    self.ptjsonlib.end_error(f"Redirect to URL: {resp_hp.headers.get('Location', 'unknown')}", self.args.json)
             elif resp_hp.status_code != 200:
                 self.ptjsonlib.end_error(f"Webpage returns status code: {resp_hp.status_code}", self.args.json)
 

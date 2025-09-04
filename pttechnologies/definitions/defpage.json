@@ -44,11 +44,10 @@
         "flags": "i"
       },
       {
-        "name": "IIS Windows Server",
-        "technology": "IIS",
+        "name": "IIS Server Header with Version",
+        "technology": "IIS", 
         "category": "WebServer",
-        "pattern": "<title>\\s*IIS\\s+Windows\\s+Server\\s*</title>|<title>\\s*Internet\\s+Information\\s+Services\\s*</title>|Microsoft-IIS[/\\s]*(\\d+\\.\\d+)?",
-        "version_pattern": "IIS[/\\s]+(\\d+(?:\\.\\d+)?)",
+        "pattern": "Server:\\s*Microsoft-IIS/(\\d+\\.\\d+)",
         "flags": "i"
       },
       {
@@ -59,11 +58,50 @@
         "flags": "i"
       },
       {
-        "name": "Azure Front Door",
+        "name": "IIS Microsoft Welcome Link",
+        "pattern": "go\\.microsoft\\.com/fwlink/\\?linkid=66138",
+        "technology": "IIS",
+        "category": "WebServer",
+        "flags": "i"
+      },
+      {
+        "name": "Windows",
+        "technology": "Windows",
+        "category": "Os",
+        "pattern": "<title>IIS\\s+Windows</title>|Server:\\s*Microsoft-IIS(?!.*Server)",
+        "exclude_pattern": "Windows\\s+Server|IIS\\s+Windows\\s+Server",
+        "version_pattern": "Windows\\s+(10|11|\\d+)",
+        "flags": "i"
+      },
+      {
+        "name": "Windows Server",
+        "technology": "Windows server", 
+        "category": "Os",
+        "pattern": "<title>IIS\\s+Windows\\s+Server</title>|<title>.Internet\\s+Information\\s+Services.</title>.*Server|Server:\\s*Microsoft-IIS.*Server",
+        "version_pattern": "Windows\\s+Server\\s+(\\d{4})",
+        "flags": "i"
+      },
+      {
+        "name": "IIS Version from Title",
+        "pattern": "<title>\\s*IIS(\\d+(?:\\.\\d+)?)\\s*</title>",
+        "version_pattern": "<title>\\s*IIS(\\d+(?:\\.\\d+)?)\\s*</title>",
+        "technology": "IIS",
+        "category": "WebServer",
+        "flags": "i"
+      },
+      {
+        "name": "IIS Welcome PNG Pattern",
+        "pattern": "<img\\s+src=[\"']welcome\\.png[\"']\\s+alt=[\"']IIS\\d+[\"']",
+        "technology": "IIS",
+        "category": "WebServer", 
+        "flags": "i"
+      },
+      {
+        "name": "Azure Front Door Service Error",
         "technology": "Azure Front Door",
         "category": "CDN",
-        "pattern": "Azure\\s+Front\\s+Door|AFD-Cache:\\s*\\w+|X-Azure-Ref:\\s*[\\w=]+|azure-api\\.net|azurefd\\.net",
-        "flags": "i"
+        "pattern": "(?i)(?:oops!?\\s+)?we\\s+weren[''`]t\\s+able\\s+to\\s+find\\s+your\\s+azure\\s+front\\s+door\\s+service",
+        "flags": "i"      
       },
       {
         "name": "Azure CDN",
@@ -137,11 +175,10 @@
         "flags": "is"
       },
       {
-        "name": "LiteSpeed Default",
+        "name": "LiteSpeed Default Page",
         "technology": "LiteSpeed",
         "category": "WebServer",
-        "pattern": "<title>\\s*LiteSpeed\\s+WebServer\\s+Default\\s+Page\\s*</title>|LiteSpeed\\s+Web\\s?Server",
-        "version_pattern": "LiteSpeed[/\\s]+(\\d+\\.\\d+(?:\\.\\d+)?)",
+        "pattern": "(?i)proudly\\s*powered\\s*by\\s*litespeed\\s*web\\s*server|litespeed\\s*technologies\\s*inc\\.",
         "flags": "i"
       },
       {
@@ -193,14 +230,6 @@
         "technology": "Oracle Linux",
         "category": "Os",
         "pattern": "<title>.*Oracle\\s+Linux.*Test\\s+Page.*</title>|<h1>\\s*Oracle\\s+Linux.*Apache.*</h1>",
-        "flags": "i"
-      },
-      {
-        "name": "Windows Server",
-        "technology": "Windows Server",
-        "category": "Os",
-        "pattern": "<title>.*Internet\\s+Information\\s+Services.*</title>|<h1>.*Internet\\s+Information\\s+Services.*</h1>|Server:\\s*Microsoft-IIS",
-        "version_pattern": "Windows\\s+Server\\s+(\\d{4})",
         "flags": "i"
       },
       {

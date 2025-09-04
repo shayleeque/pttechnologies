@@ -191,7 +191,8 @@ class Predict:
             str or None: Formatted description text or None if no source description.
         """
         if prediction['description'] is not None:
-            return f"Prediction based on {(prediction['description']).split(' ')[0]}"
+            base = prediction['description']
+            return f"Prediction based on {base}"
         return None
 
     def _save_to_storage(self, prediction, description):
@@ -252,7 +253,7 @@ class Predict:
             
         for pred in self.predictions_made:
             tech_display = f"{pred['technology']} ({pred['type']})"
-            source_display = f"<- {pred['source']}"
+            source_display = f"<- {pred['source'].rsplit(' ',1)[0]}"
             
             ptprint(f"{tech_display}", "VULN", not self.args.json, indent=4, end="")
             ptprint(f" {source_display}", "ADDITIONS", not self.args.json, colortext=True)

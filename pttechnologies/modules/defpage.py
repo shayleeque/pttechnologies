@@ -104,8 +104,11 @@ class DEFPAGE:
             
         content = response.text
         status_code = getattr(response, 'status_code', 0)
+
+        if self.args.verbose:
+            self._debug_output(content, protocol, response, url)
         
-        technologies = self._analyze_page_content(content, protocol)
+        technologies = self._analyze_page_content(content, protocol, response)
         
         if technologies:
             for tech in technologies:
@@ -113,13 +116,123 @@ class DEFPAGE:
                 tech['url'] = url
                 self.detected_technologies.append(tech)
 
-    def _analyze_page_content(self, content: str, protocol: str) -> List[Dict[str, Any]]:
+    def _debug_output(self, content: str, protocol: str, response: object, url: str) -> None:
         """
-        Analyze page content against known default page patterns.
+        Debug output shown when the -vv flag is used.
+
+        Args:
+            content: HTML content of the page.
+            protocol: Protocol used (e.g., HTTP, HTTPS).
+            response: Response object returned by the request.
+            url: Requested URL address.
+        """
+
+        title = self._extract_title(content)
+        if title:
+            ptprint(f"HTML Title: {title}", "ADDITIONS", not self.args.json, indent=8, colortext=True)
+        else:
+            ptprint("HTML Title: Not found or empty", "ADDITIONS", not self.args.json, indent=8, colortext=True)
+        
+        if hasattr(response, 'headers') and self.args.verbose:
+            server_header = response.headers.get('Server', 'Not found')
+            ptprint(f"Server Header: {server_header}", "ADDITIONS", not self.args.json, indent=8, colortext=True)
+        
+        method_info = self._determine_method(response, content, url)
+        ptprint(f"Method: {method_info}", "ADDITIONS", not self.args.json, indent=8, colortext=True)
+
+    def _extract_title(self, content: str) -> Optional[str]:
+        """
+        Extracts the contents of the HTML <title> element.
+
+        Args:
+            content: HTML content.
+
+        Returns:
+            The title text or None if not found.
+        """
+        
+        title_pattern = r'<title[^>]*>(.*?)</title>'
+        match = re.search(title_pattern, content, re.IGNORECASE | re.DOTALL)
+        
+        if match:
+            title = match.group(1).strip()
+            title = re.sub(r'<[^>]+>', '', title)
+            title = re.sub(r'\s+', ' ', title)
+            return title if title else None
+        
+        return None
+
+    def _determine_method(self, response: object, content: str, url: str) -> str:
+        """
+        Determines how the default page was delivered.
+
+        Args:
+            response: Response object.
+            content: HTML content.
+            url: Requested URL.
+
+        Returns:
+            Human-readable description of the delivery method.
+        """
+        status_code = getattr(response, 'status_code', 0)
+        
+        if hasattr(response, 'history') and response.history:
+            return f"HTTP Redirect (final status: {status_code})"
+        
+        if status_code == 200:
+            if self._is_index_page(content):
+                return "Default index page (200) (GET method)"
+            elif self._is_server_generated(content):
+                return "Server-generated default page (200) (GET method)"
+            else:
+                return "Static default page (200) (GET method)"
+        elif status_code == 403:
+            return "Access forbidden - directory listing disabled (403)(GET method)"
+        elif status_code == 404:
+            return "Not found - custom 404 page (GET method)"
+        elif status_code in [301, 302, 303, 307, 308]:
+            return f"HTTP Redirect ({status_code}) (GET method)"
+        else:
+            return f"HTTP {status_code} response (GET method)"
+
+    def _is_index_page(self, content: str) -> bool:
+        """Checks whether the content looks like a typical index page."""
+        index_indicators = [
+            r'index\.html?',
+            r'welcome\s+to',
+            r'default\s+page',
+            r'home\s+page',
+            r'directory\s+listing'
+        ]
+        
+        for pattern in index_indicators:
+            if re.search(pattern, content, re.IGNORECASE):
+                return True
+        return False
+
+    def _is_server_generated(self, content: str) -> bool:
+        """Checks whether the page appears to be server-generated."""
+        server_indicators = [
+            r'apache.*server',
+            r'nginx.*server',
+            r'iis.*server',
+            r'server\s+information',
+            r'web\s+server\s+is\s+running'
+        ]
+        
+        for pattern in server_indicators:
+            if re.search(pattern, content, re.IGNORECASE):
+                return True
+        return False
+
+    def _analyze_page_content(self, content: str, protocol: str, response: object = None) -> List[Dict[str, Any]]:
+        """
+        Analyze page content and headers against known default page patterns.
         
         Args:
             content: HTML content of the page
             protocol: Protocol used ('http' or 'https')
+            response: HTTP response object containing headers
             
         Returns:
             List of detected technologies (deduplicated by technology name)
@@ -132,8 +245,17 @@ class DEFPAGE:
 
         patterns = self.definitions.get('patterns', [])
         
+        headers_dict = {}
+        if response and hasattr(response, 'headers'):
+            headers_dict = dict(response.headers)
+        
         for pattern_def in patterns:
-            match_result = self._match_pattern(content, pattern_def)
+            match_result = self._match_pattern(content, pattern_def, 'content')
+            
+            if not match_result and headers_dict:
+                headers_text = '\n'.join([f"{k}: {v}" for k, v in headers_dict.items()])
+                match_result = self._match_pattern(headers_text, pattern_def, 'headers')
+            
             if match_result:
                 tech_key = match_result.get('technology', match_result.get('name', 'Unknown')).lower()
                 
@@ -143,13 +265,14 @@ class DEFPAGE:
         
         return detected
 
-    def _match_pattern(self, content: str, pattern_def: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _match_pattern(self, content: str, pattern_def: Dict[str, Any], source_type: str = 'content') -> Optional[Dict[str, Any]]:
         """
         Match content against a specific pattern definition.
         
         Args:
             content: Page content to analyze
             pattern_def: Pattern definition from JSON
+            source_type: 'content' or 'headers'
             
         Returns:
             Technology information if matched, None otherwise
@@ -172,6 +295,7 @@ class DEFPAGE:
             match = re.search(pattern, content, re_flags)
         except re.error as e:
             ptprint(f"Invalid regex pattern in definitions: {e}", "INFO", not self.args.json, indent=8)
+            return None
         
         if not match:
             return None
@@ -181,7 +305,8 @@ class DEFPAGE:
             'category': pattern_def.get('category', 'unknown'),
             'technology': pattern_def.get('technology', pattern_def.get('name', 'Unknown')),
             'version': None,
-            'matched_text': match.group(0)[:100] + ('...' if len(match.group(0)) > 100 else '')
+            'matched_text': match.group(0)[:100] + ('...' if len(match.group(0)) > 100 else ''),
+            'source_location': source_type
         }
         
         version_pattern = pattern_def.get('version_pattern')
@@ -222,9 +347,10 @@ class DEFPAGE:
                 ptprint(f"{tech['technology']}{version_text}{category_text}", 
                        "VULN", not self.args.json, indent=8)
                 
-                #if self.args.verbose:
-                #    ptprint(f"Matched: {tech.get('matched_text', 'N/A')}", 
-                #           "ADDITIONS", not self.args.json, indent=12,colortext=True)
+                if self.args.verbose:
+                    source_location = tech.get('source_location', 'content')
+                    ptprint(f"Matched: {tech.get('matched_text', 'N/A')} (from {source_location})", 
+                           "ADDITIONS", not self.args.json, indent=12, colortext=True)
 
         unique_technologies = {}
         for tech in self.detected_technologies:
@@ -247,10 +373,12 @@ class DEFPAGE:
         tech_type = tech.get('category')
         probability = tech.get('probability', 100)
         protocol = tech.get('protocol', 'unknown')
+        source_location = tech.get('source_location', 'content')
         
         description = f"Default {protocol.upper()} page: {tech_name}"
         if version:
             description += f" {version}"
+        description += f" (detected from {source_location})"
         
         storage.add_to_storage(
             technology=tech_name,

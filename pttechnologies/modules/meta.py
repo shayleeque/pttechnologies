@@ -12,6 +12,9 @@ from ptlibs.ptprinthelper import ptprint
 from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
+__TESTLABEL__ = "Test for meta tag technology identification"
+
+
 class Meta:
     """
     Meta tag analyzer for technology detection.
@@ -56,7 +59,7 @@ class Meta:
         Returns:
             None
         """
-        ptprint("Test for meta tag technology identification", "TITLE", not self.args.json, colortext=True)
+        ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
         
         html_content = self.response_hp.text
         meta_tags = self._extract_meta_tags(html_content)

@@ -10,6 +10,8 @@ from ptlibs.ptprinthelper import ptprint
 from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
+__TESTLABEL__ = "Test for cookie-based technology identification"
+
 
 class COOK:
     """
@@ -49,7 +51,7 @@ class COOK:
         Extracts cookies from all available responses and analyzes them
         for technology identification patterns.
         """
-        ptprint("Test for cookie-based technology identification", "TITLE", not self.args.json, colortext=True)
+        ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
         
         all_cookies = self._collect_all_cookies()
         

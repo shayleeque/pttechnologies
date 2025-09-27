@@ -249,7 +249,7 @@ class Summary:
             "parent": None,
             "parentType": parent_type,
             "properties": {
-                "type": self._map_software_type(data.get("technology_type")),
+                "software_type": self._map_software_type(data.get("technology_type")),
                 "name": technology,
                 "version": version or "",
                 "description": description

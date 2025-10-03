@@ -14,6 +14,8 @@ Contains:
 Usage:
     WSHT(args, ptjsonlib, helpers, http_client, responses).run()
 """
+import requests
+
 from helpers.result_storage import storage
 from helpers.stored_responses import StoredResponses
 
@@ -57,19 +59,24 @@ class WSHT:
 
         ptprint(__TESTLABEL__, "TITLE", not self.args.json, colortext=True)
 
-        response1 = self.http_client.send_request(url=self.args.url + "/.hh", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
-        response2 = self.http_client.send_request(url=self.args.url + "/.ht", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
+        try:
+            response1 = self.http_client.send_request(url=self.args.url + "/.hh", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
+            response2 = self.http_client.send_request(url=self.args.url + "/.ht", method="GET", headers=self.args.headers, allow_redirects=False, timeout=None)
 
-        if response1 is None or response2 is None:
+            if response1 is None or response2 is None:
+                ptprint("Connection error occurred", "INFO", not self.args.json, indent=4)
+                return
+                
+            if response1.status_code != response2.status_code:
+                probability = 100
+                storage.add_to_storage(technology="Apache", technology_type="WebServer", vulnerability="PTV-WEB-INFO-WSHT", probability=probability)
+                ptprint(f"Identified WS: Apache", "VULN", not self.args.json, indent=4, end=" ")
+                ptprint(f"({probability}%)", "ADDITIONS", not self.args.json, colortext=True)
+            else:
+                ptprint(f"It is not possible to identify the web server, but it does not seem to be Apache", "INFO", not self.args.json, indent=4)
+        
+        except requests.exceptions.RequestException as e:
             ptprint("Connection error occurred", "INFO", not self.args.json, indent=4)
-            return
-            
-        if response1.status_code != response2.status_code:
-            storage.add_to_storage(technology="Apache", technology_type="WebServer", vulnerability="PTV-WEB-INFO-WSHT")
-            ptprint(f"Identified WS: Apache", "VULN", not self.args.json, indent=4)
-        else:
-            ptprint(f"It is not possible to identify the web server, but it does not seem to be Apache", "INFO", not self.args.json, indent=4)
-
 
 def run(args: object, ptjsonlib: object, helpers: object, http_client: object, responses: StoredResponses):
     """Entry point to run the WSHT (Web Server .htaccess Test)."""

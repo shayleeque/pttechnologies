@@ -279,7 +279,7 @@
         ],
         "predict":[
             {
-                "technology": "Php",
+                "technology": "PHP",
                 "technology_type": "Interpret",
                 "probability": 100,
                 "description": "Joomla (WebApp)"
@@ -310,7 +310,7 @@
         ],
         "predict":[
             {
-                "technology": "Php",
+                "technology": "PHP",
                 "technology_type": "Interpret",
                 "probability": 100,
                 "description": "WordPress (WebApp)"
@@ -335,7 +335,7 @@
         ],
         "predict":[
             {
-                "technology": "Php",
+                "technology": "PHP",
                 "technology_type": "Interpret",
                 "probability": 100,
                 "description": "Drupal (WebApp)"
@@ -414,6 +414,19 @@
                 "technology_type": "Interpret",
                 "probability": 100,
                 "description": "Adminer (DatabaseManagement)"
+            }
+        ]
+    },
+    {
+        "when":[
+            {"technology": "Apache Tomcat"}
+        ],
+        "predict":[
+            {
+                "technology": "Java",
+                "technology_type": "Interpret",
+                "probability": 100,
+                "description": "Tomcat (WebServer)"
             }
         ]
     }

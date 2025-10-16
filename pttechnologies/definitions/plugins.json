@@ -1,0 +1,440 @@
+[
+    {
+      "name": "contact-form-7",
+      "display_name": "Contact Form 7",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "contact-form-7",
+        "wpcf7"
+      ],
+      "file_patterns": [
+        "wp-contact-form-7.js",
+        "scripts.js",
+        "styles.css"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/contact-form-7/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "yoast-seo",
+      "display_name": "Yoast SEO",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "wordpress-seo",
+        "yoast-seo"
+      ],
+      "file_patterns": [
+        "wp-seo.js",
+        "analysis.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/wordpress-seo/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "akismet",
+      "display_name": "Akismet Anti-Spam",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "akismet"
+      ],
+      "file_patterns": [
+        "akismet.js",
+        "form.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/akismet/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "jetpack",
+      "display_name": "Jetpack",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "jetpack"
+      ],
+      "file_patterns": [
+        "jetpack.js",
+        "stats.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/jetpack/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "woocommerce",
+      "display_name": "WooCommerce",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "woocommerce"
+      ],
+      "file_patterns": [
+        "woocommerce.js",
+        "woocommerce.css",
+        "frontend.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/woocommerce/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "elementor",
+      "display_name": "Elementor",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "elementor"
+      ],
+      "file_patterns": [
+        "frontend.min.js",
+        "frontend.min.css"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/elementor/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "wpforms-lite",
+      "display_name": "WPForms Lite",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "wpforms",
+        "wpforms-lite"
+      ],
+      "file_patterns": [
+        "wpforms.js",
+        "wpforms.css"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/wpforms-lite/readme.txt",
+        "/wp-content/plugins/wpforms/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "wordfence",
+      "display_name": "Wordfence Security",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "wordfence"
+      ],
+      "file_patterns": [
+        "wfToolTips.js",
+        "main.css"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/wordfence/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "all-in-one-seo-pack",
+      "display_name": "All in One SEO Pack",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "all-in-one-seo-pack",
+        "aioseo"
+      ],
+      "file_patterns": [
+        "aioseo.js",
+        "aioseo.css"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/all-in-one-seo-pack/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "classic-editor",
+      "display_name": "Classic Editor",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "classic-editor"
+      ],
+      "file_patterns": [
+        "classic-editor.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/classic-editor/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "duplicate-post",
+      "display_name": "Duplicate Post",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "duplicate-post"
+      ],
+      "file_patterns": [
+        "duplicate-post.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/duplicate-post/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "really-simple-ssl",
+      "display_name": "Really Simple SSL",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "really-simple-ssl"
+      ],
+      "file_patterns": [
+        "rsssl.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/really-simple-ssl/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "wp-super-cache",
+      "display_name": "WP Super Cache",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "wp-super-cache"
+      ],
+      "file_patterns": [
+        "wp-cache.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/wp-super-cache/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "wp-optimize",
+      "display_name": "WP-Optimize",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "wp-optimize"
+      ],
+      "file_patterns": [
+        "wp-optimize.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/wp-optimize/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "updraftplus",
+      "display_name": "UpdraftPlus Backup",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "updraftplus"
+      ],
+      "file_patterns": [
+        "updraftplus.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/updraftplus/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "regenerate-thumbnails",
+      "display_name": "Regenerate Thumbnails",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "regenerate-thumbnails"
+      ],
+      "file_patterns": [
+        "regenerate-thumbnails.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/regenerate-thumbnails/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "redirection",
+      "display_name": "Redirection",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "redirection"
+      ],
+      "file_patterns": [
+        "redirection.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/redirection/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "google-analytics-for-wordpress",
+      "display_name": "MonsterInsights",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "google-analytics-for-wordpress",
+        "monsterinsights"
+      ],
+      "file_patterns": [
+        "monsterinsights.js",
+        "frontend.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/google-analytics-for-wordpress/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "medium"
+    },
+    {
+      "name": "w3-total-cache",
+      "display_name": "W3 Total Cache",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "w3-total-cache"
+      ],
+      "file_patterns": [
+        "w3tc.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/w3-total-cache/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "wordpress-importer",
+      "display_name": "WordPress Importer",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "wordpress-importer"
+      ],
+      "file_patterns": [
+        "import.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/wordpress-importer/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "mailchimp-for-wp",
+      "display_name": "MC4WP: Mailchimp for WordPress",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "mailchimp-for-wp",
+        "mc4wp"
+      ],
+      "file_patterns": [
+        "forms-api.js",
+        "forms.css"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/mailchimp-for-wp/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "add-to-any",
+      "display_name": "AddToAny Share Buttons",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "add-to-any"
+      ],
+      "file_patterns": [
+        "addtoany.min.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/add-to-any/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "flamingo",
+      "display_name": "Flamingo",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "flamingo"
+      ],
+      "file_patterns": [
+        "flamingo.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/flamingo/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "loco-translate",
+      "display_name": "Loco Translate",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "loco-translate"
+      ],
+      "file_patterns": [
+        "loco.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/loco-translate/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    },
+    {
+      "name": "advanced-custom-fields",
+      "display_name": "Advanced Custom Fields",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "advanced-custom-fields",
+        "acf"
+      ],
+      "file_patterns": [
+        "acf.js",
+        "acf-input.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/advanced-custom-fields/readme.txt"
+      ],
+      "known_vulnerabilities": true,
+      "priority": "high"
+    },
+    {
+      "name": "limit-login-attempts-reloaded",
+      "display_name": "Limit Login Attempts Reloaded",
+      "category": "WordPress Plugin",
+      "url_patterns": [
+        "limit-login-attempts-reloaded"
+      ],
+      "file_patterns": [
+        "limit-login-attempts.js"
+      ],
+      "readme_paths": [
+        "/wp-content/plugins/limit-login-attempts-reloaded/readme.txt"
+      ],
+      "known_vulnerabilities": false,
+      "priority": "low"
+    }
+  ]
